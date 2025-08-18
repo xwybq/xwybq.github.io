@@ -1,731 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title>某周写题报告</title>
-    <url>/project/posts/a443d63f/</url>
-    <content><![CDATA[
-把某周做过的题稍微整理了一下，主要是DP，方便随时复习，也方便后人踩坑。
-
-
-
-
-1 完全背包 · 洛谷 P1616 疯狂的采药思路把「时间」看成背包容量，「价值」就是药草收益。每种药草可以无限次采集 ⇒ 完全背包。
-状态转移  
-dp[j] = max(dp[j], dp[j - h[i]] + w[i])
-
-代码
-#include &lt;bits/stdc++.h&gt;using namespace std;const int N = 1e4 + 10;typedef long long ll;int h[N], w[N];const int M = 1e7 + 10;ll dp[M];int main()&#123;    int t, m;    scanf(&quot;%d%d&quot;, &amp;t, &amp;m);    for (int i = 1; i &lt;= m; i++)    &#123;        scanf(&quot;%d%d&quot;, &amp;h[i], &amp;w[i]);    &#125;    for (int i = 1; i &lt;= m; i++)    &#123;        for (int j = h[i]; j &lt;= t; j++)        &#123;            dp[j] = max(dp[j - h[i]] + w[i], dp[j]);        &#125;    &#125;    printf(&quot;%lld\n&quot;, dp[t]);    return 0;&#125;
-
-
-2 混合背包 · 洛谷 P1833 樱花思路题目同时出现 01、多重、完全三种背包。
-
-p[i] == 0 → 完全背包
-p[i] &gt; 0  → 01 &#x2F; 多重背包
-
-状态转移完全背包：正序多重背包：拆成 01 后逆序
-代码
-#include &lt;bits/stdc++.h&gt;using namespace std;const int N = 1e4 + 10;int t[N], w[N], p[N];int dp[1008];int main()&#123;    int h1, h2, m1, m2;    scanf(&quot;%d:%d %d:%d&quot;, &amp;h1, &amp;m1, &amp;h2, &amp;m2);    int n;    scanf(&quot;%d&quot;, &amp;n);    int ans = (m2 - m1) + (h2 - h1) * 60;    for (int i = 1; i &lt;= n; i++)    &#123;        scanf(&quot;%d%d%d&quot;, &amp;t[i], &amp;w[i], &amp;p[i]);    &#125;    for (int i = 1; i &lt;= n; i++)    &#123;        if (p[i] == 0) //完全背包        &#123;            for (int j = t[i]; j &lt;= ans; j++)            &#123;                dp[j] = max(dp[j - t[i]] + w[i], dp[j]);            &#125;        &#125;        else //多重背包和01背包        &#123;            for (int k = 1; k &lt;= p[i]; k++)            &#123;                for (int j = ans; j &gt;= k * t[i]; j--)                &#123;                    dp[j] = max(dp[j - t[i]] + w[i], dp[j]);                &#125;            &#125;        &#125;    &#125;    printf(&quot;%d\n&quot;, dp[ans]);    return 0;&#125;
-
-
-3 二维背包 · 洛谷 P1855 榨取kkksc03思路背包有两个限制维度：时间 &amp; 金钱 ⇒ 二维 01 背包。
-状态转移
-dp[j][k] = max(dp[j][k], dp[j - a[i]][k - b[i]] + 1)
-
-代码
-#include &lt;bits/stdc++.h&gt;using namespace std;int a[108], b[108];int dp[300][300];int main()&#123;    int n, m, t;    scanf(&quot;%d%d%d&quot;, &amp;n, &amp;m, &amp;t);    for (int i = 1; i &lt;= n; i++)    &#123;        scanf(&quot;%d%d&quot;, &amp;a[i], &amp;b[i]);    &#125;    for (int i = 1; i &lt;= n; i++)    &#123;        for (int j = m; j &gt;= a[i]; j--)        &#123;            for (int k = t; k &gt;= b[i]; k--)            &#123;                dp[j][k] = max(dp[j][k], dp[j - a[i]][k - b[i]] + 1);            &#125;        &#125;    &#125;    printf(&quot;%d\n&quot;, dp[m][t]);    return 0;&#125;
-
-
-4 分组背包 · 洛谷 P1757 通天之分组背包思路物品分多组，每组最多选一个 ⇒ 经典分组背包。
-代码
-#include &lt;bits/stdc++.h&gt;using namespace std;const int N = 1e4 + 10;int cnt[N];int dp[N];int a[N], b[N];int vis[N][N];int main()&#123;    int m, n;    scanf(&quot;%d%d&quot;, &amp;m, &amp;n);    int ans;    int maxn = 0;    for (int i = 1; i &lt;= n; i++)    &#123;        scanf(&quot;%d%d%d&quot;, &amp;a[i], &amp;b[i], &amp;ans);        ++cnt[ans];        vis[ans][cnt[ans]] = i;        maxn = max(maxn, ans);    &#125;    for (int i = 1; i &lt;= maxn; i++)    &#123;        for (int j = m; j &gt;= 0; j--)        &#123;            for (int k = 1; k &lt;= cnt[i]; k++)            &#123;                if (j &gt;= a[vis[i][k]])                &#123;                    dp[j] = max(dp[j], dp[j - a[vis[i][k]]] + b[vis[i][k]]);                &#125;            &#125;        &#125;    &#125;    printf(&quot;%d\n&quot;, dp[m]);    return 0;&#125;
-
-
-5 带附件的 01 背包 · 洛谷 P1064 [NOIP2006 提高组] 金明的预算方案思路每个主件最多带 2 个附件，决策从 2 种变成 5 种：不选、只选主件、主件 + 附件1、主件 + 附件2、主件 + 全部附件。
-代码
-#include &lt;bits/stdc++.h&gt;using namespace std;const int N = 4e4 + 10;int dpmainv[N], dpmainw[N];int dpannexv[N][3], dpannexw[N][3];int cnt[N];int dp[N];int main()&#123;    int n, m;    scanf(&quot;%d%d&quot;, &amp;n, &amp;m);    int a, b, q;    for (int i = 1; i &lt;= m; i++)    &#123;        scanf(&quot;%d%d%d&quot;, &amp;a, &amp;b, &amp;q);        if (q == 0)        &#123;            dpmainv[i] = a;            dpmainw[i] = a * b;        &#125;        else        &#123;            cnt[q]++;            dpannexv[q][cnt[q]] = a;            dpannexw[q][cnt[q]] = a * b;        &#125;    &#125;    for (int i = 1; i &lt;= m; i++)    &#123;        for (int j = n; j &gt;= dpmainv[i] &amp;&amp; dpmainv[i] &gt; 0; j--)        &#123;            dp[j] = max(dp[j], dp[j - dpmainv[i]] + dpmainw[i]);            if (j &gt;= dpmainv[i] + dpannexv[i][1])            &#123;                dp[j] = max(dp[j], dp[j - dpmainv[i] - dpannexv[i][1]] + dpmainw[i] + dpannexw[i][1]);            &#125;            if (j &gt;= dpmainv[i] + dpannexv[i][2])            &#123;                dp[j] = max(dp[j], dp[j - dpmainv[i] - dpannexv[i][2]] + dpmainw[i] + dpannexw[i][2]);            &#125;            if (j &gt;= dpmainv[i] + dpannexv[i][1] + dpannexv[i][2])            &#123;                dp[j] = max(dp[j], dp[j - dpmainv[i] - dpannexv[i][1] - dpannexv[i][2]] + dpmainw[i] + dpannexw[i][1] + dpannexw[i][2]);            &#125;        &#125;    &#125;    printf(&quot;%d\n&quot;, dp[n]);    return 0;&#125;
-
-
-6 树形 DP · 洛谷 P1352 没有上司的舞会思路树上做 01 背包：
-
-dp[u][0] 不参加，儿子可选可不选
-dp[u][1] 参加，儿子不能参加
-
-代码
-#include &lt;bits/stdc++.h&gt;using namespace std;const int N = 6e3 + 10;int a[N];int dp[N][2];int vis[N];vector&lt;int&gt; v[N];void dfs(int ans)&#123;    dp[ans][1] = a[ans];    for (int i = 0; i &lt; v[ans].size(); i++)    &#123;        int cnt = v[ans][i];        dfs(cnt);                                  //往下遍历        dp[ans][0] += max(dp[cnt][0], dp[cnt][1]); //他的下属参加还是不参加        dp[ans][1] += dp[cnt][0];                  //此时下属不能参加    &#125;&#125;int main()&#123;    int n;    scanf(&quot;%d&quot;, &amp;n);    for (int i = 1; i &lt;= n; i++)    &#123;        scanf(&quot;%d&quot;, &amp;a[i]);    &#125;    int p, q;    for (int i = 1; i &lt;= n - 1; i++)    &#123;        scanf(&quot;%d%d&quot;, &amp;p, &amp;q);        v[q].push_back(p);        vis[p] = 1; //把职员标记上    &#125;    int ans = 0;    for (int i = 1; i &lt;= n; i++)    &#123;        if (vis[i] == 0) //找最高职位，也就是树的根        &#123;            ans = i;            break;        &#125;    &#125;    dfs(ans);    printf(&quot;%d\n&quot;, max(dp[ans][0], dp[ans][1]));    return 0;&#125;
-
-
-7 区间 DP · 能量项链思路环形合并石子模板：枚举长度 → 枚举左端点 → 枚举断点。
-代码
-#include &lt;iostream&gt;#include &lt;cstdio&gt;#include &lt;cstring&gt;#include &lt;math.h&gt;#include &lt;algorithm&gt;#include &lt;vector&gt;using namespace std;const int N = 2e2 + 10;int a[N];int dp[N][N];int main()&#123;    int n;    scanf(&quot;%d&quot;, &amp;n);    for (int i = 1; i &lt;= n; i++)    &#123;        scanf(&quot;%d&quot;, &amp;a[i]);        a[i + n] = a[i];    &#125;    // 2 3 5 10 2 3 5 10    //还是环形石子问题    for (int len = 3; len &lt;= n + 1; len++) //最少要三个值才能聚合两个珠子，但最后一个值最后还会用到    &#123;        for (int l = 1; l + len - 1 &lt;= 2 * n; l++)        &#123;            int r = l + len - 1;            for (int k = l + 1; k &lt; r; k++) //由于每颗珠子分首尾，所以k最小也得是l+1            &#123;                dp[l][r] = max(dp[l][r], dp[l][k] + dp[k][r] + a[l] * a[k] * a[r]); //由于k位置这个元素会重复用到，所以不用加一！！！            &#125;        &#125;    &#125;    int maxn = 0;    for (int i = 1; i &lt;= n; i++)    &#123;        maxn = max(maxn, dp[i][n + i]);        // printf(&quot;%d\n&quot;, dp[i][i + n]);    &#125;    printf(&quot;%d\n&quot;, maxn);    return 0;&#125;
-
-
-8 第 k 优解 · HDU 2639思路在 01 背包基础上多开一维 dp[j][k] 记录体积为 j 时的前 k 大值。
-核心技巧每次用归并排序思想把两条链（选&#x2F;不选）的前 k 大合并。
-代码
-#include &lt;bits/stdc++.h&gt;using namespace std;const int N = 1e3 + 10;int dp[N][N];int a[108], b[108];int c[108], d[108];int main()&#123;    int t;    scanf(&quot;%d&quot;, &amp;t);    while (t--)    &#123;        memset(dp, 0, sizeof(dp));        memset(c, 0, sizeof(c));        memset(d, 0, sizeof(d));        int n, v, p;        scanf(&quot;%d%d%d&quot;, &amp;n, &amp;v, &amp;p);        for (int i = 1; i &lt;= n; i++)        &#123;            scanf(&quot;%d&quot;, &amp;a[i]);        &#125;        for (int i = 1; i &lt;= n; i++)        &#123;            scanf(&quot;%d&quot;, &amp;b[i]);        &#125;        for (int i = 1; i &lt;= n; i++)        &#123;            for (int j = v; j &gt;= b[i]; j--)            &#123;                for (int k = 1; k &lt;= p; k++)                &#123;                    c[k] = dp[j][k]; //体积为j时的第k大价值                    d[k] = dp[j - b[i]][k] + a[i];                &#125;                int q = 1, l = 1, r = 1;                while (q &lt;= p &amp;&amp; (l &lt;= p || r &lt;= p))                &#123;                    if (c[l] &gt;= d[r]) //比较两个数的大小，谁大就用谁赋值                    &#123;                        dp[j][q] = c[l++];                    &#125;                    else                    &#123;                        dp[j][q] = d[r++];                    &#125;                    if (dp[j][q] != dp[j][q - 1]) //这里要去一下重                    &#123;                        q++;                    &#125;                &#125;            &#125;        &#125;        printf(&quot;%d\n&quot;, dp[v][p]);    &#125;    return 0;&#125;
-
-
-9 线段树&#x2F;搜索 · HDU 5323思路根据父子区间关系做 DFS，剪枝：右端点大于当前答案或左端点越界时返回。
-代码
-#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;ll ans;void dfs(ll l, ll r) //建立左区间和右区间递归搜索&#123;    if (l == 0)    &#123;        if (r != 0)        &#123;            ans = min(ans, r);        &#125;    &#125;    if (r &gt;= ans) //右边界    &#123;        return;    &#125;    if (l - 1 - (r - l) &lt; 0) //左边界    &#123;        return;    &#125;    dfs(l - 1 - (r - l), r); //奇数区间    dfs(l, r + 1 + r - l);    dfs(l - 1 - (r - l) - 1, r); //偶数区间    dfs(l, r + 1 + r - l - 1);&#125;int main()&#123;    ll l, r;    while (scanf(&quot;%lld%lld&quot;, &amp;l, &amp;r) != EOF)    &#123;        ans = 0x3f3f3f3f;        dfs(l, r);        if (l == 0 &amp;&amp; r == 0)        &#123;            printf(&quot;0\n&quot;);        &#125;        else        &#123;            if (ans == 0x3f3f3f3f)            &#123;                printf(&quot;-1\n&quot;);            &#125;            else            &#123;                printf(&quot;%lld\n&quot;, ans);            &#125;        &#125;    &#125;    return 0;&#125;]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>算法</tag>
-        <tag>动态规划</tag>
-        <tag>背包</tag>
-        <tag>线段树 ，搜索</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>谷歌账号注册教程</title>
-    <url>/project/posts/a3c9f8a9/</url>
-    <content><![CDATA[准备工作
-稳定的科学上网环境  
-可接收验证码的手机号（国内 +86 亦可）
-
-注册步骤
-打开 Google 账号注册页面。
-依次填写姓名、用户名、密码并点击「下一步」。
-输入手机号 → 接收并填写验证码 → 继续。
-填写出生日期与性别 → 下一步。
-阅读隐私条款 → 点击「我同意」。
-完成后自动跳转至 Google 首页，即注册成功。
-
-常见问题
-收不到验证码？更换浏览器&#x2F;设备，或尝试语音电话验证。  
-提示“此号码已用过太多次”？更换号码，或等待 24 h 后再试。
-
-至此，谷歌账号注册完毕，可用于 Gmail、YouTube、Google Drive 等服务。
-]]></content>
-      <categories>
-        <category>配置</category>
-      </categories>
-      <tags>
-        <tag>配置</tag>
-        <tag>Google</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/project/posts/4a17b156/</url>
-    <content><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick StartCreate a new post$ hexo new &quot;My New Post&quot;
-
-More info: Writing
-Run server$ hexo server
-
-More info: Server
-Generate static files$ hexo generate
-
-More info: Generating
-Deploy to remote sites$ hexo deploy
-
-More info: Deployment
-]]></content>
-  </entry>
-  <entry>
-    <title>分类</title>
-    <url>/project/categories/index.html</url>
-    <content><![CDATA[
-
-
-📂 文章分类点击任一分区，浏览该分类下的全部内容。
-]]></content>
-  </entry>
-  <entry>
-    <title>关于我</title>
-    <url>/project/about/index.html</url>
-    <content><![CDATA[
+<search> 
   
   
-  
-
-  
-  
-  扫码加我微信
-
-
-
-👋 Hi, I’m xwybq一名在读学生，正朝着 Java 后端开发工程师 的方向狂奔。日常折腾代码、折腾硬件、折腾算法，乐此不疲。
-🔗 找到我
-GitHub: github.com&#x2F;xwybq
-邮箱:  w3290819205@gmail.com
-
-🛠 技术栈
-
-
-方向
-具体技能
-
-
-
-Java 后端
-Java SE &#x2F; Java EE, Spring Boot, Spring MVC, MyBatis, MySQL, Redis, Maven , Vue
-
-
-Python 拓展
-数学建模（NumPy &#x2F; Pandas &#x2F; Matplotlib）MicroPython 硬件控制（Arduino &#x2F; ESP32 &#x2F; Raspberry Pi Pico）深度学习（PyTorch &#x2F; TensorFlow）
-
-
-算法 &amp; 基础
-C++ 刷题（LeetCode &#x2F; AcWing &#x2F; NowCoder &#x2F; Codeforces）、数据结构、算法设计
-
-
-
-“Stay hungry, stay foolish, stay coding.”
-
-]]></content>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/project/styles/fish-base.js</url>
-    <content><![CDATA[var RENDERER = {
-    POINT_INTERVAL : 5,
-    FISH_COUNT : 3,
-    MAX_INTERVAL_COUNT : 50,
-    INIT_HEIGHT_RATE : 0.5,
-    THRESHOLD : 50,
-
-    init : function(){
-        this.setParameters();
-        this.reconstructMethods();
-        this.setup();
-        this.bindEvent();
-        this.render();
-    },
-    setParameters : function(){
-        this.$window = $(window);
-        this.$container = $('#jsi-flying-fish-container');
-        this.$canvas = $('');
-        this.context = this.$canvas.appendTo(this.$container).get(0).getContext('2d');
-        this.points = [];
-        this.fishes = [];
-        this.watchIds = [];
-    },
-    createSurfacePoints : function(){
-        var count = Math.round(this.width / this.POINT_INTERVAL);
-        this.pointInterval = this.width / (count - 1);
-        this.points.push(new SURFACE_POINT(this, 0));
-
-        for(var i = 1; i < count; i++){
-            var point = new SURFACE_POINT(this, i * this.pointInterval),
-                previous = this.points[i - 1];
-
-            point.setPreviousPoint(previous);
-            previous.setNextPoint(point);
-            this.points.push(point);
-        }
-    },
-    reconstructMethods : function(){
-        this.watchWindowSize = this.watchWindowSize.bind(this);
-        this.jdugeToStopResize = this.jdugeToStopResize.bind(this);
-        this.startEpicenter = this.startEpicenter.bind(this);
-        this.moveEpicenter = this.moveEpicenter.bind(this);
-        this.reverseVertical = this.reverseVertical.bind(this);
-        this.render = this.render.bind(this);
-    },
-    setup : function(){
-        this.points.length = 0;
-        this.fishes.length = 0;
-        this.watchIds.length = 0;
-        this.intervalCount = this.MAX_INTERVAL_COUNT;
-        this.width = this.$container.width();
-        this.height = this.$container.height();
-        this.fishCount = this.FISH_COUNT * this.width / 500 * this.height / 500;
-        this.$canvas.attr({width : this.width, height : this.height});
-        this.reverse = false;
-
-        this.fishes.push(new FISH(this));
-        this.createSurfacePoints();
-    },
-    watchWindowSize : function(){
-        this.clearTimer();
-        this.tmpWidth = this.$window.width();
-        this.tmpHeight = this.$window.height();
-        this.watchIds.push(setTimeout(this.jdugeToStopResize, this.WATCH_INTERVAL));
-    },
-    clearTimer : function(){
-        while(this.watchIds.length > 0){
-            clearTimeout(this.watchIds.pop());
-        }
-    },
-    jdugeToStopResize : function(){
-        var width = this.$window.width(),
-            height = this.$window.height(),
-            stopped = (width == this.tmpWidth && height == this.tmpHeight);
-
-        this.tmpWidth = width;
-        this.tmpHeight = height;
-
-        if(stopped){
-            this.setup();
-        }
-    },
-    bindEvent : function(){
-        this.$window.on('resize', this.watchWindowSize);
-        this.$container.on('mouseenter', this.startEpicenter);
-        this.$container.on('mousemove', this.moveEpicenter);
-        this.$container.on('click', this.reverseVertical);
-    },
-    getAxis : function(event){
-        var offset = this.$container.offset();
-
-        return {
-            x : event.clientX - offset.left + this.$window.scrollLeft(),
-            y : event.clientY - offset.top + this.$window.scrollTop()
-        };
-    },
-    startEpicenter : function(event){
-        this.axis = this.getAxis(event);
-    },
-    moveEpicenter : function(event){
-        var axis = this.getAxis(event);
-
-        if(!this.axis){
-            this.axis = axis;
-        }
-        this.generateEpicenter(axis.x, axis.y, axis.y - this.axis.y);
-        this.axis = axis;
-    },
-    generateEpicenter : function(x, y, velocity){
-        if(y < this.height / 2 - this.THRESHOLD || y > this.height / 2 + this.THRESHOLD){
-            return;
-        }
-        var index = Math.round(x / this.pointInterval);
-
-        if(index < 0 || index >= this.points.length){
-            return;
-        }
-        this.points[index].interfere(y, velocity);
-    },
-    reverseVertical : function(){
-        this.reverse = !this.reverse;
-
-        for(var i = 0, count = this.fishes.length; i < count; i++){
-            this.fishes[i].reverseVertical();
-        }
-    },
-    controlStatus : function(){
-        for(var i = 0, count = this.points.length; i < count; i++){
-            this.points[i].updateSelf();
-        }
-        for(var i = 0, count = this.points.length; i < count; i++){
-            this.points[i].updateNeighbors();
-        }
-        if(this.fishes.length < this.fishCount){
-            if(--this.intervalCount == 0){
-                this.intervalCount = this.MAX_INTERVAL_COUNT;
-                this.fishes.push(new FISH(this));
-            }
-        }
-    },
-    render : function(){
-        requestAnimationFrame(this.render);
-        this.controlStatus();
-        this.context.clearRect(0, 0, this.width, this.height);
-        this.context.fillStyle = 'hsl(0, 0%, 95%)';
-
-        for(var i = 0, count = this.fishes.length; i < count; i++){
-            this.fishes[i].render(this.context);
-        }
-        this.context.save();
-        this.context.globalCompositeOperation = 'xor';
-        this.context.beginPath();
-        this.context.moveTo(0, this.reverse ? 0 : this.height);
-
-        for(var i = 0, count = this.points.length; i < count; i++){
-            this.points[i].render(this.context);
-        }
-        this.context.lineTo(this.width, this.reverse ? 0 : this.height);
-        this.context.closePath();
-        this.context.fill();
-        this.context.restore();
-    }
-};
-var SURFACE_POINT = function(renderer, x){
-    this.renderer = renderer;
-    this.x = x;
-    this.init();
-};
-SURFACE_POINT.prototype = {
-    SPRING_CONSTANT : 0.03,
-    SPRING_FRICTION : 0.9,
-    WAVE_SPREAD : 0.3,
-    ACCELARATION_RATE : 0.01,
-
-    init : function(){
-        this.initHeight = this.renderer.height * this.renderer.INIT_HEIGHT_RATE;
-        this.height = this.initHeight;
-        this.fy = 0;
-        this.force = {previous : 0, next : 0};
-    },
-    setPreviousPoint : function(previous){
-        this.previous = previous;
-    },
-    setNextPoint : function(next){
-        this.next = next;
-    },
-    interfere : function(y, velocity){
-        this.fy = this.renderer.height * this.ACCELARATION_RATE * ((this.renderer.height - this.height - y) >= 0 ? -1 : 1) * Math.abs(velocity);
-    },
-    updateSelf : function(){
-        this.fy += this.SPRING_CONSTANT * (this.initHeight - this.height);
-        this.fy *= this.SPRING_FRICTION;
-        this.height += this.fy;
-    },
-    updateNeighbors : function(){
-        if(this.previous){
-            this.force.previous = this.WAVE_SPREAD * (this.height - this.previous.height);
-        }
-        if(this.next){
-            this.force.next = this.WAVE_SPREAD * (this.height - this.next.height);
-        }
-    },
-    render : function(context){
-        if(this.previous){
-            this.previous.height += this.force.previous;
-            this.previous.fy += this.force.previous;
-        }
-        if(this.next){
-            this.next.height += this.force.next;
-            this.next.fy += this.force.next;
-        }
-        context.lineTo(this.x, this.renderer.height - this.height);
-    }
-};
-var FISH = function(renderer){
-    this.renderer = renderer;
-    this.init();
-};
-FISH.prototype = {
-    GRAVITY : 0.4,
-
-    init : function(){
-        this.direction = Math.random() < 0.5;
-        this.x = this.direction ? (this.renderer.width + this.renderer.THRESHOLD) : -this.renderer.THRESHOLD;
-        this.previousY = this.y;
-        this.vx = this.getRandomValue(4, 10) * (this.direction ? -1 : 1);
-
-        if(this.renderer.reverse){
-            this.y = this.getRandomValue(this.renderer.height * 1 / 10, this.renderer.height * 4 / 10);
-            this.vy = this.getRandomValue(2, 5);
-            this.ay = this.getRandomValue(0.05, 0.2);
-        }else{
-            this.y = this.getRandomValue(this.renderer.height * 6 / 10, this.renderer.height * 9 / 10);
-            this.vy = this.getRandomValue(-5, -2);
-            this.ay = this.getRandomValue(-0.2, -0.05);
-        }
-        this.isOut = false;
-        this.theta = 0;
-        this.phi = 0;
-    },
-    getRandomValue : function(min, max){
-        return min + (max - min) * Math.random();
-    },
-    reverseVertical : function(){
-        this.isOut = !this.isOut;
-        this.ay *= -1;
-    },
-    controlStatus : function(context){
-        this.previousY = this.y;
-        this.x += this.vx;
-        this.y += this.vy;
-        this.vy += this.ay;
-
-        if(this.renderer.reverse){
-            if(this.y > this.renderer.height * this.renderer.INIT_HEIGHT_RATE){
-                this.vy -= this.GRAVITY;
-                this.isOut = true;
-            }else{
-                if(this.isOut){
-                    this.ay = this.getRandomValue(0.05, 0.2);
-                }
-                this.isOut = false;
-            }
-        }else{
-            if(this.y < this.renderer.height * this.renderer.INIT_HEIGHT_RATE){
-                this.vy += this.GRAVITY;
-                this.isOut = true;
-            }else{
-                if(this.isOut){
-                    this.ay = this.getRandomValue(-0.2, -0.05);
-                }
-                this.isOut = false;
-            }
-        }
-        if(!this.isOut){
-            this.theta += Math.PI / 20;
-            this.theta %= Math.PI * 2;
-            this.phi += Math.PI / 30;
-            this.phi %= Math.PI * 2;
-        }
-        this.renderer.generateEpicenter(this.x + (this.direction ? -1 : 1) * this.renderer.THRESHOLD, this.y, this.y - this.previousY);
-
-        if(this.vx > 0 && this.x > this.renderer.width + this.renderer.THRESHOLD || this.vx < 0 && this.x < -this.renderer.THRESHOLD){
-            this.init();
-        }
-    },
-    render : function(context){
-        context.save();
-        context.translate(this.x, this.y);
-        context.rotate(Math.PI + Math.atan2(this.vy, this.vx));
-        context.scale(1, this.direction ? 1 : -1);
-        context.beginPath();
-        context.moveTo(-30, 0);
-        context.bezierCurveTo(-20, 15, 15, 10, 40, 0);
-        context.bezierCurveTo(15, -10, -20, -15, -30, 0);
-        context.fill();
-
-        context.save();
-        context.translate(40, 0);
-        context.scale(0.9 + 0.2 * Math.sin(this.theta), 1);
-        context.beginPath();
-        context.moveTo(0, 0);
-        context.quadraticCurveTo(5, 10, 20, 8);
-        context.quadraticCurveTo(12, 5, 10, 0);
-        context.quadraticCurveTo(12, -5, 20, -8);
-        context.quadraticCurveTo(5, -10, 0, 0);
-        context.fill();
-        context.restore();
-
-        context.save();
-        context.translate(-3, 0);
-        context.rotate((Math.PI / 3 + Math.PI / 10 * Math.sin(this.phi)) * (this.renderer.reverse ? -1 : 1));
-
-        context.beginPath();
-
-        if(this.renderer.reverse){
-            context.moveTo(5, 0);
-            context.bezierCurveTo(10, 10, 10, 30, 0, 40);
-            context.bezierCurveTo(-12, 25, -8, 10, 0, 0);
-        }else{
-            context.moveTo(-5, 0);
-            context.bezierCurveTo(-10, -10, -10, -30, 0, -40);
-            context.bezierCurveTo(12, -25, 8, -10, 0, 0);
-        }
-        context.closePath();
-        context.fill();
-        context.restore();
-        context.restore();
-        this.controlStatus(context);
-    }
-};
-$(function(){
-    RENDERER.init();
-});]]></content>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/project/styles/main.css</url>
-    <content><![CDATA[/* 鱼塘固定宽度 */
-canvas:not(#ribbon-canvas), #web_bg {
-    margin-bottom: -0.5rem;
-    display: block;
-    width: 100%;
-    height: 160px
-}
-
-/* 鱼塘渐变色 */
-body{
-    overflow-x: hidden;
-}
-#footer {
-    height:160px;
-    background: linear-gradient(
-            135deg,
-            rgba(23, 23, 116, 0.2),
-            rgba(28, 181, 224, 0.2)
-    );
-}
-#footer #footer-wrap,
-#footer-wrap a {
-    color: #000;
-}
-#footer #footer-wrap {
-    z-index: 1;
-}
-
-#footer .container {
-    line-height: 0;
-    position: relative;
-    height: 100%;
-    width: 100vw;
-}
-
-/* 侧边栏个人信息卡片动态渐变色 */
-#aside-content>.card-widget.card-info{
-    background: linear-gradient(-45deg, rgba(255, 225, 245, 0.6),
-    rgba(255, 225, 225, 0.9),
-    rgba(225, 255, 251, 0.9),
-    rgba(255, 225, 255, 0.6));
-}
-[data-theme=dark] #aside-content>.card-widget.card-info {
-    background: linear-gradient(-45deg, rgb(225, 238, 255),
-    rgba(225, 255, 253, 0.9),
-    rgba(225, 243, 255, 0.9),
-    rgba(255, 225, 253, 0.6));
-}
-/* 侧边栏公告栏卡片渐变色 */
-#aside-content>.card-widget.card-announcement{
-    background: linear-gradient(-45deg, rgba(255, 225, 245, 0.6),
-    rgba(255, 225, 225, 0.9),
-    rgba(225, 255, 251, 0.9),
-    rgba(255, 225, 255, 0.6));
-}
-[data-theme=dark] #aside-content>.card-widget.card-announcement{
-    background: linear-gradient(-45deg, rgba(255, 225, 245, 0.6),
-    rgba(255, 225, 225, 0.9),
-    rgba(225, 255, 251, 0.9),
-    rgba(255, 225, 255, 0.6));
-}
-/* 侧边栏目录最新文章卡片渐变色 */
-#aside-content>.sticky_layout>.card-widget{
-    background: linear-gradient(-45deg, rgba(255, 225, 245, 0.6),
-    rgba(255, 225, 225, 0.9),
-    rgba(225, 255, 251, 0.9),
-    rgba(255, 225, 255, 0.6));
-}
-[data-theme=dark] #aside-content>.sticky_layout>.card-widget{
-    background: linear-gradient(-45deg, rgba(255, 225, 245, 0.6),
-    rgba(255, 225, 225, 0.9),
-    rgba(225, 255, 251, 0.9),
-    rgba(255, 225, 255, 0.6));
-}
-/* 个人信息Follow me按钮 */
-#aside-content>.card-widget.card-info>#card-info-btn {
-    background-color: #3eb8be;
-    border-radius: 8px;
-}
-/*文章页面*/
-/* .layout>#post {
-    background: linear-gradient(-45deg, rgba(225, 255, 252, 0.8),
-rgba(255, 225, 229, 0.9),
-rgba(225, 255, 225, 0.9),
-rgba(253, 255, 225, 0.8));
-}
-[data-theme=dark] .layout>#post {
-    background: linear-gradient(-45deg, rgba(24,40,72,.2),
-rgba(35,37,58,.9),
-rgba(35,37,58,.9),
-rgba(24,40,72,.2));
-} */
-/*主页文章预览页面*/
-#recent-posts>.recent-post-item{
-    background: linear-gradient(-45deg, rgba(225, 255, 252, 0.8),
-    rgba(255, 225, 229, 0.9),
-    rgba(225, 255, 225, 0.9),
-    rgba(253, 255, 225, 0.8));
-}
-[data-theme=dark] #recent-posts>.recent-post-item{
-    background: linear-gradient(-45deg, rgba(24,40,72,.2),
-    rgba(35,37,58,.9),
-    rgba(35,37,58,.9),
-    rgba(24,40,72,.2));
-}
-
-/*分类页面*/
-.layout>#page {
-    background: linear-gradient(-45deg, rgba(225,235,255,.8),
-    rgba(225,235,255,.9),
-    rgba(225,235,255,.9),
-    rgba(225,235,255,.8));
-}
-[data-theme=dark] .layout>#page {
-    background: linear-gradient(-45deg, rgba(24,40,72,.2),
-    rgba(35,37,58,.9),
-    rgba(35,37,58,.9),
-    rgba(24,40,72,.2));
-}
-
-/*时间轴页面*/
-.layout>#archive {
-    background: linear-gradient(-45deg, rgba(225,235,255,.8),
-    rgba(225,235,255,.9),
-    rgba(225,235,255,.9),
-    rgba(225,235,255,.8));
-}
-[data-theme=dark] .layout>#archive {
-    background: linear-gradient(-45deg, rgba(24,40,72,.2),
-    rgba(35,37,58,.9),
-    rgba(35,37,58,.9),
-    rgba(24,40,72,.2));
-}]]></content>
-  </entry>
-  <entry>
-    <title>标签</title>
-    <url>/project/tags/index.html</url>
-    <content><![CDATA[
-
-
-🔖 文章标签云点击任意标签，即可查看该主题下的所有文章。
-]]></content>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/project/styles/fish.js</url>
-    <content><![CDATA[fish();
-function fish() {
-    return (
-        $("#footer-wrap").css({
-            position: "absolute",
-            "text-align": "center",
-            top: 0,
-            right: 0,
-            left: 0,
-            bottom: 0,
-        }),
-            $("footer").append(
-                ''
-            ),
-            $("body").append(
-                ''
-            ),
-            this
-    );
-}]]></content>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/project/gallery/baby.html</url>
-    <content><![CDATA[
-    [{"url":"http://blog-1253652709.cos.ap-guangzhou.myqcloud.com/pasteimageintomarkdown/2023-08-23/46201997695900.jpeg","alt":"","title":""},{"url":"http://blog-1253652709.cos.ap-guangzhou.myqcloud.com/pasteimageintomarkdown/2023-08-23/46974523049100.jpeg","alt":"","title":""}]
-  ]]></content>
-  </entry>
-  <entry>
-    <title>折腾</title>
-    <url>/project/gallery/tinkering.html</url>
-    <content><![CDATA[
-    [{"url":"https://img.cdn1.vip/i/68a3282a46476_1755523114.webp","alt":"桌面改造.jpg","title":""}]
-  ]]></content>
-  </entry>
-  <entry>
-    <title>相册</title>
-    <url>/project/gallery/index.html</url>
-    <content><![CDATA[🧳 旅行
     
-    
-      旅行
-      走过的地方
+    <entry>
+      <title>Hello World</title>
+      <link href="/project/posts/4a17b156/"/>
+      <url>/project/posts/4a17b156/</url>
       
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\project\assets\css\APlayer.min.css"><script src="\project\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>某周写题报告</title>
+      <link href="/project/posts/a443d63f/"/>
+      <url>/project/posts/a443d63f/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\project\assets\css\APlayer.min.css"><script src="\project\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><blockquote><p>把某周做过的题稍微整理了一下，主要是DP，方便随时复习，也方便后人踩坑。</p></blockquote><span id="more"></span><hr><h2 id="1-完全背包-·-洛谷-P1616-疯狂的采药"><a href="#1-完全背包-·-洛谷-P1616-疯狂的采药" class="headerlink" title="1 完全背包 · 洛谷 P1616 疯狂的采药"></a>1 完全背包 · 洛谷 P1616 疯狂的采药</h2><p><strong>思路</strong><br>把「时间」看成背包容量，「价值」就是药草收益。每种药草可以无限次采集 ⇒ 完全背包。</p><p><strong>状态转移</strong>  </p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dp[j] = <span class="built_in">max</span>(dp[j], dp[j - h[i]] + w[i])</span><br></pre></td></tr></table></figure><p><strong>代码</strong></p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">1e4</span> + <span class="number">10</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">long</span> <span class="type">long</span> ll;</span><br><span class="line"><span class="type">int</span> h[N], w[N];</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> M = <span class="number">1e7</span> + <span class="number">10</span>;</span><br><span class="line">ll dp[M];</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> t, m;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;t, &amp;m);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;h[i], &amp;w[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = h[i]; j &lt;= t; j++)</span><br><span class="line">        &#123;</span><br><span class="line">            dp[j] = <span class="built_in">max</span>(dp[j - h[i]] + w[i], dp[j]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%lld\n&quot;</span>, dp[t]);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><hr><h2 id="2-混合背包-·-洛谷-P1833-樱花"><a href="#2-混合背包-·-洛谷-P1833-樱花" class="headerlink" title="2 混合背包 · 洛谷 P1833 樱花"></a>2 混合背包 · 洛谷 P1833 樱花</h2><p><strong>思路</strong><br>题目同时出现 01、多重、完全三种背包。</p><ul><li><code>p[i] == 0</code> → 完全背包</li><li><code>p[i] &gt; 0</code>  → 01 &#x2F; 多重背包</li></ul><p><strong>状态转移</strong><br>完全背包：正序<br>多重背包：拆成 01 后逆序</p><p><strong>代码</strong></p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">1e4</span> + <span class="number">10</span>;</span><br><span class="line"><span class="type">int</span> t[N], w[N], p[N];</span><br><span class="line"><span class="type">int</span> dp[<span class="number">1008</span>];</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> h1, h2, m1, m2;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d:%d %d:%d&quot;</span>, &amp;h1, &amp;m1, &amp;h2, &amp;m2);</span><br><span class="line">    <span class="type">int</span> n;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;n);</span><br><span class="line">    <span class="type">int</span> ans = (m2 - m1) + (h2 - h1) * <span class="number">60</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>, &amp;t[i], &amp;w[i], &amp;p[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (p[i] == <span class="number">0</span>) <span class="comment">//完全背包</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = t[i]; j &lt;= ans; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[j] = <span class="built_in">max</span>(dp[j - t[i]] + w[i], dp[j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="comment">//多重背包和01背包</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> k = <span class="number">1</span>; k &lt;= p[i]; k++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> j = ans; j &gt;= k * t[i]; j--)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[j] = <span class="built_in">max</span>(dp[j - t[i]] + w[i], dp[j]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, dp[ans]);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><hr><h2 id="3-二维背包-·-洛谷-P1855-榨取kkksc03"><a href="#3-二维背包-·-洛谷-P1855-榨取kkksc03" class="headerlink" title="3 二维背包 · 洛谷 P1855 榨取kkksc03"></a>3 二维背包 · 洛谷 P1855 榨取kkksc03</h2><p><strong>思路</strong><br>背包有两个限制维度：时间 &amp; 金钱 ⇒ 二维 01 背包。</p><p><strong>状态转移</strong></p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dp[j][k] = <span class="built_in">max</span>(dp[j][k], dp[j - a[i]][k - b[i]] + <span class="number">1</span>)</span><br></pre></td></tr></table></figure><p><strong>代码</strong></p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">int</span> a[<span class="number">108</span>], b[<span class="number">108</span>];</span><br><span class="line"><span class="type">int</span> dp[<span class="number">300</span>][<span class="number">300</span>];</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> n, m, t;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>, &amp;n, &amp;m, &amp;t);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;a[i], &amp;b[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = m; j &gt;= a[i]; j--)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> k = t; k &gt;= b[i]; k--)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[j][k] = <span class="built_in">max</span>(dp[j][k], dp[j - a[i]][k - b[i]] + <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, dp[m][t]);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><hr><h2 id="4-分组背包-·-洛谷-P1757-通天之分组背包"><a href="#4-分组背包-·-洛谷-P1757-通天之分组背包" class="headerlink" title="4 分组背包 · 洛谷 P1757 通天之分组背包"></a>4 分组背包 · 洛谷 P1757 通天之分组背包</h2><p><strong>思路</strong><br>物品分多组，每组最多选一个 ⇒ 经典分组背包。</p><p><strong>代码</strong></p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">1e4</span> + <span class="number">10</span>;</span><br><span class="line"><span class="type">int</span> cnt[N];</span><br><span class="line"><span class="type">int</span> dp[N];</span><br><span class="line"><span class="type">int</span> a[N], b[N];</span><br><span class="line"><span class="type">int</span> vis[N][N];</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> m, n;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;m, &amp;n);</span><br><span class="line">    <span class="type">int</span> ans;</span><br><span class="line">    <span class="type">int</span> maxn = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>, &amp;a[i], &amp;b[i], &amp;ans);</span><br><span class="line">        ++cnt[ans];</span><br><span class="line">        vis[ans][cnt[ans]] = i;</span><br><span class="line">        maxn = <span class="built_in">max</span>(maxn, ans);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= maxn; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = m; j &gt;= <span class="number">0</span>; j--)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> k = <span class="number">1</span>; k &lt;= cnt[i]; k++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (j &gt;= a[vis[i][k]])</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[j] = <span class="built_in">max</span>(dp[j], dp[j - a[vis[i][k]]] + b[vis[i][k]]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, dp[m]);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><hr><h2 id="5-带附件的-01-背包-·-洛谷-P1064-NOIP2006-提高组-金明的预算方案"><a href="#5-带附件的-01-背包-·-洛谷-P1064-NOIP2006-提高组-金明的预算方案" class="headerlink" title="5 带附件的 01 背包 · 洛谷 P1064 [NOIP2006 提高组] 金明的预算方案"></a>5 带附件的 01 背包 · 洛谷 P1064 [NOIP2006 提高组] 金明的预算方案</h2><p><strong>思路</strong><br>每个主件最多带 2 个附件，决策从 2 种变成 5 种：<br>不选、只选主件、主件 + 附件1、主件 + 附件2、主件 + 全部附件。</p><p><strong>代码</strong></p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">4e4</span> + <span class="number">10</span>;</span><br><span class="line"><span class="type">int</span> dpmainv[N], dpmainw[N];</span><br><span class="line"><span class="type">int</span> dpannexv[N][<span class="number">3</span>], dpannexw[N][<span class="number">3</span>];</span><br><span class="line"><span class="type">int</span> cnt[N];</span><br><span class="line"><span class="type">int</span> dp[N];</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> n, m;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;n, &amp;m);</span><br><span class="line">    <span class="type">int</span> a, b, q;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>, &amp;a, &amp;b, &amp;q);</span><br><span class="line">        <span class="keyword">if</span> (q == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            dpmainv[i] = a;</span><br><span class="line">            dpmainw[i] = a * b;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            cnt[q]++;</span><br><span class="line">            dpannexv[q][cnt[q]] = a;</span><br><span class="line">            dpannexw[q][cnt[q]] = a * b;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = n; j &gt;= dpmainv[i] &amp;&amp; dpmainv[i] &gt; <span class="number">0</span>; j--)</span><br><span class="line">        &#123;</span><br><span class="line">            dp[j] = <span class="built_in">max</span>(dp[j], dp[j - dpmainv[i]] + dpmainw[i]);</span><br><span class="line">            <span class="keyword">if</span> (j &gt;= dpmainv[i] + dpannexv[i][<span class="number">1</span>])</span><br><span class="line">            &#123;</span><br><span class="line">                dp[j] = <span class="built_in">max</span>(dp[j], dp[j - dpmainv[i] - dpannexv[i][<span class="number">1</span>]] + dpmainw[i] + dpannexw[i][<span class="number">1</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (j &gt;= dpmainv[i] + dpannexv[i][<span class="number">2</span>])</span><br><span class="line">            &#123;</span><br><span class="line">                dp[j] = <span class="built_in">max</span>(dp[j], dp[j - dpmainv[i] - dpannexv[i][<span class="number">2</span>]] + dpmainw[i] + dpannexw[i][<span class="number">2</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (j &gt;= dpmainv[i] + dpannexv[i][<span class="number">1</span>] + dpannexv[i][<span class="number">2</span>])</span><br><span class="line">            &#123;</span><br><span class="line">                dp[j] = <span class="built_in">max</span>(dp[j], dp[j - dpmainv[i] - dpannexv[i][<span class="number">1</span>] - dpannexv[i][<span class="number">2</span>]] + dpmainw[i] + dpannexw[i][<span class="number">1</span>] + dpannexw[i][<span class="number">2</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, dp[n]);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><hr><h2 id="6-树形-DP-·-洛谷-P1352-没有上司的舞会"><a href="#6-树形-DP-·-洛谷-P1352-没有上司的舞会" class="headerlink" title="6 树形 DP · 洛谷 P1352 没有上司的舞会"></a>6 树形 DP · 洛谷 P1352 没有上司的舞会</h2><p><strong>思路</strong><br>树上做 01 背包：</p><ul><li><code>dp[u][0]</code> 不参加，儿子可选可不选</li><li><code>dp[u][1]</code> 参加，儿子不能参加</li></ul><p><strong>代码</strong></p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">6e3</span> + <span class="number">10</span>;</span><br><span class="line"><span class="type">int</span> a[N];</span><br><span class="line"><span class="type">int</span> dp[N][<span class="number">2</span>];</span><br><span class="line"><span class="type">int</span> vis[N];</span><br><span class="line">vector&lt;<span class="type">int</span>&gt; v[N];</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(<span class="type">int</span> ans)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    dp[ans][<span class="number">1</span>] = a[ans];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; v[ans].<span class="built_in">size</span>(); i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> cnt = v[ans][i];</span><br><span class="line">        <span class="built_in">dfs</span>(cnt);                                  <span class="comment">//往下遍历</span></span><br><span class="line">        dp[ans][<span class="number">0</span>] += <span class="built_in">max</span>(dp[cnt][<span class="number">0</span>], dp[cnt][<span class="number">1</span>]); <span class="comment">//他的下属参加还是不参加</span></span><br><span class="line">        dp[ans][<span class="number">1</span>] += dp[cnt][<span class="number">0</span>];                  <span class="comment">//此时下属不能参加</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> n;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;n);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;a[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> p, q;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n - <span class="number">1</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;p, &amp;q);</span><br><span class="line">        v[q].<span class="built_in">push_back</span>(p);</span><br><span class="line">        vis[p] = <span class="number">1</span>; <span class="comment">//把职员标记上</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (vis[i] == <span class="number">0</span>) <span class="comment">//找最高职位，也就是树的根</span></span><br><span class="line">        &#123;</span><br><span class="line">            ans = i;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">dfs</span>(ans);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, <span class="built_in">max</span>(dp[ans][<span class="number">0</span>], dp[ans][<span class="number">1</span>]));</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><hr><h2 id="7-区间-DP-·-能量项链"><a href="#7-区间-DP-·-能量项链" class="headerlink" title="7 区间 DP · 能量项链"></a>7 区间 DP · 能量项链</h2><p><strong>思路</strong><br>环形合并石子模板：枚举长度 → 枚举左端点 → 枚举断点。</p><p><strong>代码</strong></p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;math.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">2e2</span> + <span class="number">10</span>;</span><br><span class="line"><span class="type">int</span> a[N];</span><br><span class="line"><span class="type">int</span> dp[N][N];</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> n;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;n);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;a[i]);</span><br><span class="line">        a[i + n] = a[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 2 3 5 10 2 3 5 10</span></span><br><span class="line">    <span class="comment">//还是环形石子问题</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> len = <span class="number">3</span>; len &lt;= n + <span class="number">1</span>; len++) <span class="comment">//最少要三个值才能聚合两个珠子，但最后一个值最后还会用到</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> l = <span class="number">1</span>; l + len - <span class="number">1</span> &lt;= <span class="number">2</span> * n; l++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> r = l + len - <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> k = l + <span class="number">1</span>; k &lt; r; k++) <span class="comment">//由于每颗珠子分首尾，所以k最小也得是l+1</span></span><br><span class="line">            &#123;</span><br><span class="line">                dp[l][r] = <span class="built_in">max</span>(dp[l][r], dp[l][k] + dp[k][r] + a[l] * a[k] * a[r]); <span class="comment">//由于k位置这个元素会重复用到，所以不用加一！！！</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> maxn = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        maxn = <span class="built_in">max</span>(maxn, dp[i][n + i]);</span><br><span class="line">        <span class="comment">// printf(&quot;%d\n&quot;, dp[i][i + n]);</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, maxn);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><hr><h2 id="8-第-k-优解-·-HDU-2639"><a href="#8-第-k-优解-·-HDU-2639" class="headerlink" title="8 第 k 优解 · HDU 2639"></a>8 第 k 优解 · HDU 2639</h2><p><strong>思路</strong><br>在 01 背包基础上多开一维 <code>dp[j][k]</code> 记录体积为 j 时的前 k 大值。</p><p><strong>核心技巧</strong><br>每次用归并排序思想把两条链（选&#x2F;不选）的前 k 大合并。</p><p><strong>代码</strong></p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">1e3</span> + <span class="number">10</span>;</span><br><span class="line"><span class="type">int</span> dp[N][N];</span><br><span class="line"><span class="type">int</span> a[<span class="number">108</span>], b[<span class="number">108</span>];</span><br><span class="line"><span class="type">int</span> c[<span class="number">108</span>], d[<span class="number">108</span>];</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> t;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;t);</span><br><span class="line">    <span class="keyword">while</span> (t--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">memset</span>(dp, <span class="number">0</span>, <span class="built_in">sizeof</span>(dp));</span><br><span class="line">        <span class="built_in">memset</span>(c, <span class="number">0</span>, <span class="built_in">sizeof</span>(c));</span><br><span class="line">        <span class="built_in">memset</span>(d, <span class="number">0</span>, <span class="built_in">sizeof</span>(d));</span><br><span class="line">        <span class="type">int</span> n, v, p;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>, &amp;n, &amp;v, &amp;p);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;a[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;b[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = v; j &gt;= b[i]; j--)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> k = <span class="number">1</span>; k &lt;= p; k++)</span><br><span class="line">                &#123;</span><br><span class="line">                    c[k] = dp[j][k]; <span class="comment">//体积为j时的第k大价值</span></span><br><span class="line">                    d[k] = dp[j - b[i]][k] + a[i];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="type">int</span> q = <span class="number">1</span>, l = <span class="number">1</span>, r = <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">while</span> (q &lt;= p &amp;&amp; (l &lt;= p || r &lt;= p))</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">if</span> (c[l] &gt;= d[r]) <span class="comment">//比较两个数的大小，谁大就用谁赋值</span></span><br><span class="line">                    &#123;</span><br><span class="line">                        dp[j][q] = c[l++];</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">else</span></span><br><span class="line">                    &#123;</span><br><span class="line">                        dp[j][q] = d[r++];</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (dp[j][q] != dp[j][q - <span class="number">1</span>]) <span class="comment">//这里要去一下重</span></span><br><span class="line">                    &#123;</span><br><span class="line">                        q++;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, dp[v][p]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><hr><h2 id="9-线段树-搜索-·-HDU-5323"><a href="#9-线段树-搜索-·-HDU-5323" class="headerlink" title="9 线段树&#x2F;搜索 · HDU 5323"></a>9 线段树&#x2F;搜索 · HDU 5323</h2><p><strong>思路</strong><br>根据父子区间关系做 DFS，剪枝：右端点大于当前答案或左端点越界时返回。</p><p><strong>代码</strong></p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">long</span> <span class="type">long</span> ll;</span><br><span class="line">ll ans;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(ll l, ll r)</span> <span class="comment">//建立左区间和右区间递归搜索</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (l == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (r != <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            ans = <span class="built_in">min</span>(ans, r);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (r &gt;= ans) <span class="comment">//右边界</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (l - <span class="number">1</span> - (r - l) &lt; <span class="number">0</span>) <span class="comment">//左边界</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">dfs</span>(l - <span class="number">1</span> - (r - l), r); <span class="comment">//奇数区间</span></span><br><span class="line">    <span class="built_in">dfs</span>(l, r + <span class="number">1</span> + r - l);</span><br><span class="line">    <span class="built_in">dfs</span>(l - <span class="number">1</span> - (r - l) - <span class="number">1</span>, r); <span class="comment">//偶数区间</span></span><br><span class="line">    <span class="built_in">dfs</span>(l, r + <span class="number">1</span> + r - l - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ll l, r;</span><br><span class="line">    <span class="keyword">while</span> (<span class="built_in">scanf</span>(<span class="string">&quot;%lld%lld&quot;</span>, &amp;l, &amp;r) != EOF)</span><br><span class="line">    &#123;</span><br><span class="line">        ans = <span class="number">0x3f3f3f3f</span>;</span><br><span class="line">        <span class="built_in">dfs</span>(l, r);</span><br><span class="line">        <span class="keyword">if</span> (l == <span class="number">0</span> &amp;&amp; r == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;0\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (ans == <span class="number">0x3f3f3f3f</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;-1\n&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;%lld\n&quot;</span>, ans);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 算法 </tag>
+            
+            <tag> 动态规划 </tag>
+            
+            <tag> 背包 </tag>
+            
+            <tag> 线段树 ，搜索 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>谷歌账号注册教程</title>
+      <link href="/project/posts/a3c9f8a9/"/>
+      <url>/project/posts/a3c9f8a9/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\project\assets\css\APlayer.min.css"><script src="\project\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ul><li>稳定的科学上网环境  </li><li>可接收验证码的手机号（国内 +86 亦可）</li></ul><h2 id="注册步骤"><a href="#注册步骤" class="headerlink" title="注册步骤"></a>注册步骤</h2><ol><li>打开 <a href="https://accounts.google.com/signup">Google 账号注册页面</a>。</li><li>依次填写姓名、用户名、密码并点击「下一步」。</li><li>输入手机号 → 接收并填写验证码 → 继续。</li><li>填写出生日期与性别 → 下一步。</li><li>阅读隐私条款 → 点击「我同意」。</li><li>完成后自动跳转至 Google 首页，即注册成功。</li></ol><h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><ul><li><strong>收不到验证码？</strong><br>更换浏览器&#x2F;设备，或尝试语音电话验证。  </li><li><strong>提示“此号码已用过太多次”？</strong><br>更换号码，或等待 24 h 后再试。</li></ul><p>至此，谷歌账号注册完毕，可用于 Gmail、YouTube、Google Drive 等服务。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 配置 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 配置 </tag>
+            
+            <tag> Google </tag>
+            
+        </tags>
+      
+    </entry>
+    
     
   
-
-🔧 折腾
+  
     
     
-      折腾
-      桌面 & 设备
+    <entry>
+      <title>分类</title>
+      <link href="/project/categories/index.html"/>
+      <url>/project/categories/index.html</url>
       
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\project\assets\css\APlayer.min.css"><script src="\project\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><!-- Butterfly 会自动生成分类列表 --><div align="center"><h3 id="📂-文章分类"><a href="#📂-文章分类" class="headerlink" title="📂 文章分类"></a>📂 文章分类</h3><p>点击任一分区，浏览该分类下的全部内容。</p></div>]]></content>
+      
+    </entry>
     
-  ]]></content>
-  </entry>
-  <entry>
-    <title>旅行</title>
-    <url>/project/gallery/travel.html</url>
-    <content><![CDATA[
-    [{"url":"https://img.cdn1.vip/i/68a32829ed36b_1755523113.webp","alt":"厦门·鼓浪屿.jpg","title":""},{"url":"https://img.cdn1.vip/i/68a3282a4aa68_1755523114.webp","alt":"上海·外滩.jpg","title":""}]
-  ]]></content>
-  </entry>
+    
+    
+    <entry>
+      <title>关于我</title>
+      <link href="/project/about/index.html"/>
+      <url>/project/about/index.html</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\project\assets\css\APlayer.min.css"><script src="\project\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><div align="center">  <!-- 微信头像 -->  <img src="https://img.cdn1.vip/i/68a31ccf95416_1755520207.webp" alt="WeChat Avatar" width="120" style="border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,.15);">  <br><br>  <!-- 微信个人二维码 -->  <img src="https://img.cdn1.vip/i/68a31ce256177_1755520226.webp" alt="WeChat QR" width="160" style="border: 6px solid #fff; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,.15);">  <br><em>扫码加我微信</em></div><hr><h3 id="👋-Hi-I’m-xwybq"><a href="#👋-Hi-I’m-xwybq" class="headerlink" title="👋 Hi, I’m xwybq"></a>👋 Hi, I’m <strong>xwybq</strong></h3><p>一名在读学生，正朝着 <strong>Java 后端开发工程师</strong> 的方向狂奔。<br>日常折腾代码、折腾硬件、折腾算法，乐此不疲。</p><h3 id="🔗-找到我"><a href="#🔗-找到我" class="headerlink" title="🔗 找到我"></a>🔗 找到我</h3><ul><li>GitHub: <a href="https://github.com/xwybq">github.com&#x2F;xwybq</a></li><li>邮箱:  <a href="mailto:w3290819205@gmail.com">w3290819205@gmail.com</a></li></ul><h3 id="🛠-技术栈"><a href="#🛠-技术栈" class="headerlink" title="🛠 技术栈"></a>🛠 技术栈</h3><table><thead><tr><th>方向</th><th>具体技能</th></tr></thead><tbody><tr><td><strong>Java 后端</strong></td><td>Java SE &#x2F; Java EE, Spring Boot, Spring MVC, MyBatis, MySQL, Redis, Maven , Vue</td></tr><tr><td><strong>Python 拓展</strong></td><td>数学建模（NumPy &#x2F; Pandas &#x2F; Matplotlib）<br>MicroPython 硬件控制（Arduino &#x2F; ESP32 &#x2F; Raspberry Pi Pico）<br>深度学习（PyTorch &#x2F; TensorFlow）</td></tr><tr><td><strong>算法 &amp; 基础</strong></td><td>C++ 刷题（LeetCode &#x2F; AcWing &#x2F; NowCoder &#x2F; Codeforces）、数据结构、算法设计</td></tr></tbody></table><blockquote><p>“Stay hungry, stay foolish, stay coding.”</p></blockquote>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>相册</title>
+      <link href="/project/gallery/index.html"/>
+      <url>/project/gallery/index.html</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\project\assets\css\APlayer.min.css"><script src="\project\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h2 id="🧳-旅行"><a href="#🧳-旅行" class="headerlink" title="🧳 旅行"></a>🧳 旅行</h2><figure class="gallery-group">    <img class="gallery-group-img no-lightbox" src='https://img.cdn1.vip/i/68a32829ed36b_1755523113.webp' alt="Group Image Gallery">    <figcaption>      <div class="gallery-group-name">旅行</div>      <p>走过的地方</p>      <a href='/project/gallery/travel'></a>    </figcaption>  </figure><h2 id="🔧-折腾"><a href="#🔧-折腾" class="headerlink" title="🔧 折腾"></a>🔧 折腾</h2><figure class="gallery-group">    <img class="gallery-group-img no-lightbox" src='https://img.cdn1.vip/i/68a3282a46476_1755523114.webp' alt="Group Image Gallery">    <figcaption>      <div class="gallery-group-name">折腾</div>      <p>桌面 & 设备</p>      <a href='/project/gallery/tinkering'></a>    </figcaption>  </figure>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>折腾</title>
+      <link href="/project/gallery/tinkering.html"/>
+      <url>/project/gallery/tinkering.html</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\project\assets\css\APlayer.min.css"><script src="\project\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><div class="gallery-container" data-type="data" data-button="true" data-limit="220" data-first="5">    <div class="gallery-items">[{"url":"https://img.cdn1.vip/i/68a3282a46476_1755523114.webp","alt":"桌面改造.jpg","title":""}]</div>  </div>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title></title>
+      <link href="/project/gallery/baby.html"/>
+      <url>/project/gallery/baby.html</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\project\assets\css\APlayer.min.css"><script src="\project\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><div class="gallery-container" data-type="data" data-button="true" data-limit="220" data-first="5">    <div class="gallery-items">[{"url":"http://blog-1253652709.cos.ap-guangzhou.myqcloud.com/pasteimageintomarkdown/2023-08-23/46201997695900.jpeg","alt":"","title":""},{"url":"http://blog-1253652709.cos.ap-guangzhou.myqcloud.com/pasteimageintomarkdown/2023-08-23/46974523049100.jpeg","alt":"","title":""}]</div>  </div>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>旅行</title>
+      <link href="/project/gallery/travel.html"/>
+      <url>/project/gallery/travel.html</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\project\assets\css\APlayer.min.css"><script src="\project\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><div class="gallery-container" data-type="data" data-button="true" data-limit="220" data-first="5">    <div class="gallery-items">[{"url":"https://img.cdn1.vip/i/68a32829ed36b_1755523113.webp","alt":"厦门·鼓浪屿.jpg","title":""},{"url":"https://img.cdn1.vip/i/68a3282a4aa68_1755523114.webp","alt":"上海·外滩.jpg","title":""}]</div>  </div>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title></title>
+      <link href="/project/styles/fish-base.js"/>
+      <url>/project/styles/fish-base.js</url>
+      
+        <content type="html"><![CDATA[var RENDERER = {    POINT_INTERVAL : 5,    FISH_COUNT : 3,    MAX_INTERVAL_COUNT : 50,    INIT_HEIGHT_RATE : 0.5,    THRESHOLD : 50,    init : function(){        this.setParameters();        this.reconstructMethods();        this.setup();        this.bindEvent();        this.render();    },    setParameters : function(){        this.$window = $(window);        this.$container = $('#jsi-flying-fish-container');        this.$canvas = $('<canvas />');        this.context = this.$canvas.appendTo(this.$container).get(0).getContext('2d');        this.points = [];        this.fishes = [];        this.watchIds = [];    },    createSurfacePoints : function(){        var count = Math.round(this.width / this.POINT_INTERVAL);        this.pointInterval = this.width / (count - 1);        this.points.push(new SURFACE_POINT(this, 0));        for(var i = 1; i < count; i++){            var point = new SURFACE_POINT(this, i * this.pointInterval),                previous = this.points[i - 1];            point.setPreviousPoint(previous);            previous.setNextPoint(point);            this.points.push(point);        }    },    reconstructMethods : function(){        this.watchWindowSize = this.watchWindowSize.bind(this);        this.jdugeToStopResize = this.jdugeToStopResize.bind(this);        this.startEpicenter = this.startEpicenter.bind(this);        this.moveEpicenter = this.moveEpicenter.bind(this);        this.reverseVertical = this.reverseVertical.bind(this);        this.render = this.render.bind(this);    },    setup : function(){        this.points.length = 0;        this.fishes.length = 0;        this.watchIds.length = 0;        this.intervalCount = this.MAX_INTERVAL_COUNT;        this.width = this.$container.width();        this.height = this.$container.height();        this.fishCount = this.FISH_COUNT * this.width / 500 * this.height / 500;        this.$canvas.attr({width : this.width, height : this.height});        this.reverse = false;        this.fishes.push(new FISH(this));        this.createSurfacePoints();    },    watchWindowSize : function(){        this.clearTimer();        this.tmpWidth = this.$window.width();        this.tmpHeight = this.$window.height();        this.watchIds.push(setTimeout(this.jdugeToStopResize, this.WATCH_INTERVAL));    },    clearTimer : function(){        while(this.watchIds.length > 0){            clearTimeout(this.watchIds.pop());        }    },    jdugeToStopResize : function(){        var width = this.$window.width(),            height = this.$window.height(),            stopped = (width == this.tmpWidth && height == this.tmpHeight);        this.tmpWidth = width;        this.tmpHeight = height;        if(stopped){            this.setup();        }    },    bindEvent : function(){        this.$window.on('resize', this.watchWindowSize);        this.$container.on('mouseenter', this.startEpicenter);        this.$container.on('mousemove', this.moveEpicenter);        this.$container.on('click', this.reverseVertical);    },    getAxis : function(event){        var offset = this.$container.offset();        return {            x : event.clientX - offset.left + this.$window.scrollLeft(),            y : event.clientY - offset.top + this.$window.scrollTop()        };    },    startEpicenter : function(event){        this.axis = this.getAxis(event);    },    moveEpicenter : function(event){        var axis = this.getAxis(event);        if(!this.axis){            this.axis = axis;        }        this.generateEpicenter(axis.x, axis.y, axis.y - this.axis.y);        this.axis = axis;    },    generateEpicenter : function(x, y, velocity){        if(y < this.height / 2 - this.THRESHOLD || y > this.height / 2 + this.THRESHOLD){            return;        }        var index = Math.round(x / this.pointInterval);        if(index < 0 || index >= this.points.length){            return;        }        this.points[index].interfere(y, velocity);    },    reverseVertical : function(){        this.reverse = !this.reverse;        for(var i = 0, count = this.fishes.length; i < count; i++){            this.fishes[i].reverseVertical();        }    },    controlStatus : function(){        for(var i = 0, count = this.points.length; i < count; i++){            this.points[i].updateSelf();        }        for(var i = 0, count = this.points.length; i < count; i++){            this.points[i].updateNeighbors();        }        if(this.fishes.length < this.fishCount){            if(--this.intervalCount == 0){                this.intervalCount = this.MAX_INTERVAL_COUNT;                this.fishes.push(new FISH(this));            }        }    },    render : function(){        requestAnimationFrame(this.render);        this.controlStatus();        this.context.clearRect(0, 0, this.width, this.height);        this.context.fillStyle = 'hsl(0, 0%, 95%)';        for(var i = 0, count = this.fishes.length; i < count; i++){            this.fishes[i].render(this.context);        }        this.context.save();        this.context.globalCompositeOperation = 'xor';        this.context.beginPath();        this.context.moveTo(0, this.reverse ? 0 : this.height);        for(var i = 0, count = this.points.length; i < count; i++){            this.points[i].render(this.context);        }        this.context.lineTo(this.width, this.reverse ? 0 : this.height);        this.context.closePath();        this.context.fill();        this.context.restore();    }};var SURFACE_POINT = function(renderer, x){    this.renderer = renderer;    this.x = x;    this.init();};SURFACE_POINT.prototype = {    SPRING_CONSTANT : 0.03,    SPRING_FRICTION : 0.9,    WAVE_SPREAD : 0.3,    ACCELARATION_RATE : 0.01,    init : function(){        this.initHeight = this.renderer.height * this.renderer.INIT_HEIGHT_RATE;        this.height = this.initHeight;        this.fy = 0;        this.force = {previous : 0, next : 0};    },    setPreviousPoint : function(previous){        this.previous = previous;    },    setNextPoint : function(next){        this.next = next;    },    interfere : function(y, velocity){        this.fy = this.renderer.height * this.ACCELARATION_RATE * ((this.renderer.height - this.height - y) >= 0 ? -1 : 1) * Math.abs(velocity);    },    updateSelf : function(){        this.fy += this.SPRING_CONSTANT * (this.initHeight - this.height);        this.fy *= this.SPRING_FRICTION;        this.height += this.fy;    },    updateNeighbors : function(){        if(this.previous){            this.force.previous = this.WAVE_SPREAD * (this.height - this.previous.height);        }        if(this.next){            this.force.next = this.WAVE_SPREAD * (this.height - this.next.height);        }    },    render : function(context){        if(this.previous){            this.previous.height += this.force.previous;            this.previous.fy += this.force.previous;        }        if(this.next){            this.next.height += this.force.next;            this.next.fy += this.force.next;        }        context.lineTo(this.x, this.renderer.height - this.height);    }};var FISH = function(renderer){    this.renderer = renderer;    this.init();};FISH.prototype = {    GRAVITY : 0.4,    init : function(){        this.direction = Math.random() < 0.5;        this.x = this.direction ? (this.renderer.width + this.renderer.THRESHOLD) : -this.renderer.THRESHOLD;        this.previousY = this.y;        this.vx = this.getRandomValue(4, 10) * (this.direction ? -1 : 1);        if(this.renderer.reverse){            this.y = this.getRandomValue(this.renderer.height * 1 / 10, this.renderer.height * 4 / 10);            this.vy = this.getRandomValue(2, 5);            this.ay = this.getRandomValue(0.05, 0.2);        }else{            this.y = this.getRandomValue(this.renderer.height * 6 / 10, this.renderer.height * 9 / 10);            this.vy = this.getRandomValue(-5, -2);            this.ay = this.getRandomValue(-0.2, -0.05);        }        this.isOut = false;        this.theta = 0;        this.phi = 0;    },    getRandomValue : function(min, max){        return min + (max - min) * Math.random();    },    reverseVertical : function(){        this.isOut = !this.isOut;        this.ay *= -1;    },    controlStatus : function(context){        this.previousY = this.y;        this.x += this.vx;        this.y += this.vy;        this.vy += this.ay;        if(this.renderer.reverse){            if(this.y > this.renderer.height * this.renderer.INIT_HEIGHT_RATE){                this.vy -= this.GRAVITY;                this.isOut = true;            }else{                if(this.isOut){                    this.ay = this.getRandomValue(0.05, 0.2);                }                this.isOut = false;            }        }else{            if(this.y < this.renderer.height * this.renderer.INIT_HEIGHT_RATE){                this.vy += this.GRAVITY;                this.isOut = true;            }else{                if(this.isOut){                    this.ay = this.getRandomValue(-0.2, -0.05);                }                this.isOut = false;            }        }        if(!this.isOut){            this.theta += Math.PI / 20;            this.theta %= Math.PI * 2;            this.phi += Math.PI / 30;            this.phi %= Math.PI * 2;        }        this.renderer.generateEpicenter(this.x + (this.direction ? -1 : 1) * this.renderer.THRESHOLD, this.y, this.y - this.previousY);        if(this.vx > 0 && this.x > this.renderer.width + this.renderer.THRESHOLD || this.vx < 0 && this.x < -this.renderer.THRESHOLD){            this.init();        }    },    render : function(context){        context.save();        context.translate(this.x, this.y);        context.rotate(Math.PI + Math.atan2(this.vy, this.vx));        context.scale(1, this.direction ? 1 : -1);        context.beginPath();        context.moveTo(-30, 0);        context.bezierCurveTo(-20, 15, 15, 10, 40, 0);        context.bezierCurveTo(15, -10, -20, -15, -30, 0);        context.fill();        context.save();        context.translate(40, 0);        context.scale(0.9 + 0.2 * Math.sin(this.theta), 1);        context.beginPath();        context.moveTo(0, 0);        context.quadraticCurveTo(5, 10, 20, 8);        context.quadraticCurveTo(12, 5, 10, 0);        context.quadraticCurveTo(12, -5, 20, -8);        context.quadraticCurveTo(5, -10, 0, 0);        context.fill();        context.restore();        context.save();        context.translate(-3, 0);        context.rotate((Math.PI / 3 + Math.PI / 10 * Math.sin(this.phi)) * (this.renderer.reverse ? -1 : 1));        context.beginPath();        if(this.renderer.reverse){            context.moveTo(5, 0);            context.bezierCurveTo(10, 10, 10, 30, 0, 40);            context.bezierCurveTo(-12, 25, -8, 10, 0, 0);        }else{            context.moveTo(-5, 0);            context.bezierCurveTo(-10, -10, -10, -30, 0, -40);            context.bezierCurveTo(12, -25, 8, -10, 0, 0);        }        context.closePath();        context.fill();        context.restore();        context.restore();        this.controlStatus(context);    }};$(function(){    RENDERER.init();});]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title></title>
+      <link href="/project/styles/fish.js"/>
+      <url>/project/styles/fish.js</url>
+      
+        <content type="html"><![CDATA[fish();function fish() {    return (        $("#footer-wrap").css({            position: "absolute",            "text-align": "center",            top: 0,            right: 0,            left: 0,            bottom: 0,        }),            $("footer").append(                '<div class="container" id="jsi-flying-fish-container"></div>'            ),            $("body").append(                '<script src="/styles/fish-base.js"></script>'            ),            this    );}]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title></title>
+      <link href="/project/styles/main.css"/>
+      <url>/project/styles/main.css</url>
+      
+        <content type="html"><![CDATA[/* 鱼塘固定宽度 */canvas:not(#ribbon-canvas), #web_bg {    margin-bottom: -0.5rem;    display: block;    width: 100%;    height: 160px}/* 鱼塘渐变色 */body{    overflow-x: hidden;}#footer {    height:160px;    background: linear-gradient(            135deg,            rgba(23, 23, 116, 0.2),            rgba(28, 181, 224, 0.2)    );}#footer #footer-wrap,#footer-wrap a {    color: #000;}#footer #footer-wrap {    z-index: 1;}#footer .container {    line-height: 0;    position: relative;    height: 100%;    width: 100vw;}/* 侧边栏个人信息卡片动态渐变色 */#aside-content>.card-widget.card-info{    background: linear-gradient(-45deg, rgba(255, 225, 245, 0.6),    rgba(255, 225, 225, 0.9),    rgba(225, 255, 251, 0.9),    rgba(255, 225, 255, 0.6));}[data-theme=dark] #aside-content>.card-widget.card-info {    background: linear-gradient(-45deg, rgb(225, 238, 255),    rgba(225, 255, 253, 0.9),    rgba(225, 243, 255, 0.9),    rgba(255, 225, 253, 0.6));}/* 侧边栏公告栏卡片渐变色 */#aside-content>.card-widget.card-announcement{    background: linear-gradient(-45deg, rgba(255, 225, 245, 0.6),    rgba(255, 225, 225, 0.9),    rgba(225, 255, 251, 0.9),    rgba(255, 225, 255, 0.6));}[data-theme=dark] #aside-content>.card-widget.card-announcement{    background: linear-gradient(-45deg, rgba(255, 225, 245, 0.6),    rgba(255, 225, 225, 0.9),    rgba(225, 255, 251, 0.9),    rgba(255, 225, 255, 0.6));}/* 侧边栏目录最新文章卡片渐变色 */#aside-content>.sticky_layout>.card-widget{    background: linear-gradient(-45deg, rgba(255, 225, 245, 0.6),    rgba(255, 225, 225, 0.9),    rgba(225, 255, 251, 0.9),    rgba(255, 225, 255, 0.6));}[data-theme=dark] #aside-content>.sticky_layout>.card-widget{    background: linear-gradient(-45deg, rgba(255, 225, 245, 0.6),    rgba(255, 225, 225, 0.9),    rgba(225, 255, 251, 0.9),    rgba(255, 225, 255, 0.6));}/* 个人信息Follow me按钮 */#aside-content>.card-widget.card-info>#card-info-btn {    background-color: #3eb8be;    border-radius: 8px;}/*文章页面*//* .layout>#post {    background: linear-gradient(-45deg, rgba(225, 255, 252, 0.8),rgba(255, 225, 229, 0.9),rgba(225, 255, 225, 0.9),rgba(253, 255, 225, 0.8));}[data-theme=dark] .layout>#post {    background: linear-gradient(-45deg, rgba(24,40,72,.2),rgba(35,37,58,.9),rgba(35,37,58,.9),rgba(24,40,72,.2));} *//*主页文章预览页面*/#recent-posts>.recent-post-item{    background: linear-gradient(-45deg, rgba(225, 255, 252, 0.8),    rgba(255, 225, 229, 0.9),    rgba(225, 255, 225, 0.9),    rgba(253, 255, 225, 0.8));}[data-theme=dark] #recent-posts>.recent-post-item{    background: linear-gradient(-45deg, rgba(24,40,72,.2),    rgba(35,37,58,.9),    rgba(35,37,58,.9),    rgba(24,40,72,.2));}/*分类页面*/.layout>#page {    background: linear-gradient(-45deg, rgba(225,235,255,.8),    rgba(225,235,255,.9),    rgba(225,235,255,.9),    rgba(225,235,255,.8));}[data-theme=dark] .layout>#page {    background: linear-gradient(-45deg, rgba(24,40,72,.2),    rgba(35,37,58,.9),    rgba(35,37,58,.9),    rgba(24,40,72,.2));}/*时间轴页面*/.layout>#archive {    background: linear-gradient(-45deg, rgba(225,235,255,.8),    rgba(225,235,255,.9),    rgba(225,235,255,.9),    rgba(225,235,255,.8));}[data-theme=dark] .layout>#archive {    background: linear-gradient(-45deg, rgba(24,40,72,.2),    rgba(35,37,58,.9),    rgba(35,37,58,.9),    rgba(24,40,72,.2));}]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>标签</title>
+      <link href="/project/tags/index.html"/>
+      <url>/project/tags/index.html</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\project\assets\css\APlayer.min.css"><script src="\project\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><!-- Butterfly 会自动生成标签云，这里可以写一句欢迎语 --><div align="center"><h3 id="🔖-文章标签云"><a href="#🔖-文章标签云" class="headerlink" title="🔖 文章标签云"></a>🔖 文章标签云</h3><p>点击任意标签，即可查看该主题下的所有文章。</p></div>]]></content>
+      
+    </entry>
+    
+    
+  
 </search>
