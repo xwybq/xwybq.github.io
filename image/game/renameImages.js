@@ -3,7 +3,7 @@ const path = require('path');
 
 // 配置：指定图片文件夹路径和需要处理的图片扩展名
 const config = {
-  folderPath: './黑神话悟空', // 图片文件夹路径，可修改为实际路径
+  folderPath: './战神', // 图片文件夹路径，可修改为实际路径
   imageExtensions: ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'] // 支持的图片格式
 };
 
@@ -27,7 +27,7 @@ fs.readdir(config.folderPath, (err, files) => {
   });
 
   if (imageFiles.length === 0) {
-    console.log('文件夹中没有找到图片文件');
+      console.log('文件夹中没有找到图片文件');
     return;
   }
 
