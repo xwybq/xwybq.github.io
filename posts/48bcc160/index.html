@@ -1,0 +1,344 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>解决Hexo相册滚动时图片消失的问题：从现象到根源的排查记录 | xw的妙妙屋</title><meta name="author" content="xw"><meta name="copyright" content="xw"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在使用 Hexo 搭建单机游戏相册页面时，遇到了一个有趣的问题：浏览 “黑神话悟空” 分类下的图片时，向下滚动页面，上方的图片会突然消失；向上滚动时，消失的图片又会重新出现。经过一番排查，终于找到原因并解决，特此记录整个过程。 一、问题现象：滚动时图片 “时隐时现”具体表现 页面结构：使用 Hexo 的&#123;% gallery %&#125;标签展示图片，按游戏分类（奥日与萤火意志、黑神话悟">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解决Hexo相册滚动时图片消失的问题：从现象到根源的排查记录">
+<meta property="og:url" content="https://www.xwybq.top/posts/48bcc160/index.html">
+<meta property="og:site_name" content="xw的妙妙屋">
+<meta property="og:description" content="在使用 Hexo 搭建单机游戏相册页面时，遇到了一个有趣的问题：浏览 “黑神话悟空” 分类下的图片时，向下滚动页面，上方的图片会突然消失；向上滚动时，消失的图片又会重新出现。经过一番排查，终于找到原因并解决，特此记录整个过程。 一、问题现象：滚动时图片 “时隐时现”具体表现 页面结构：使用 Hexo 的&#123;% gallery %&#125;标签展示图片，按游戏分类（奥日与萤火意志、黑神话悟">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tc.z.wiki/autoupload/f/ucStas0fz6Urti1KaUxkGn8gdyy46VE3EBgpLh8QvIiyl5f0KlZfm6UsKj-HyTuv/20250820/7bRr/1440X960/image.png/webp">
+<meta property="article:published_time" content="2025-08-22T07:06:05.000Z">
+<meta property="article:modified_time" content="2025-08-22T07:17:34.853Z">
+<meta property="article:author" content="xw">
+<meta property="article:tag" content="Hexo bug">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tc.z.wiki/autoupload/f/ucStas0fz6Urti1KaUxkGn8gdyy46VE3EBgpLh8QvIiyl5f0KlZfm6UsKj-HyTuv/20250820/7bRr/1440X960/image.png/webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "解决Hexo相册滚动时图片消失的问题：从现象到根源的排查记录",
+  "url": "https://www.xwybq.top/posts/48bcc160/",
+  "image": "https://tc.z.wiki/autoupload/f/ucStas0fz6Urti1KaUxkGn8gdyy46VE3EBgpLh8QvIiyl5f0KlZfm6UsKj-HyTuv/20250820/7bRr/1440X960/image.png/webp",
+  "datePublished": "2025-08-22T07:06:05.000Z",
+  "dateModified": "2025-08-22T07:17:34.853Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "xw",
+      "url": "https://www.xwybq.top"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/image/%E4%B8%89%E8%8A%B1%E7%8C%AB.png"><link rel="canonical" href="https://www.xwybq.top/posts/48bcc160/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '解决Hexo相册滚动时图片消失的问题：从现象到根源的排查记录',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/styles/main.css"><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><link rel="stylesheet" href="/css/daliyuer.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/twikoo_beauty.css"><link rel="stylesheet" href="/css/beauty.css"><link rel="stylesheet" href="/css/custom.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="xw的妙妙屋" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/headshot.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/bangumis/"><i class="fa-fw fa-brands fa-youtube"></i><span> 番剧</span></a></div><div class="menus_item"><a class="site-page" href="/steamgames/"><i class="fa-fw fa-brands fa-steam"></i><span> 游戏库</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fas fa-solid fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://tc.z.wiki/autoupload/f/ucStas0fz6Urti1KaUxkGn8gdyy46VE3EBgpLh8QvIiyl5f0KlZfm6UsKj-HyTuv/20250820/7bRr/1440X960/image.png/webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/test.gif" alt="Logo"><span class="site-name">xw的妙妙屋</span></a><a class="nav-page-title" href="/"><span class="site-name">解决Hexo相册滚动时图片消失的问题：从现象到根源的排查记录</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="weather"><div id="tp-weather-widget"></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/bangumis/"><i class="fa-fw fa-brands fa-youtube"></i><span> 番剧</span></a></div><div class="menus_item"><a class="site-page" href="/steamgames/"><i class="fa-fw fa-brands fa-steam"></i><span> 游戏库</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fas fa-solid fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div></div><div id="nav-right"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><!-- span= ' ' + _p('search.title')--></span></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">解决Hexo相册滚动时图片消失的问题：从现象到根源的排查记录</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-08-22T07:06:05.000Z" title="发表于 2025-08-22 15:06:05">2025-08-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-08-22T07:17:34.853Z" title="更新于 2025-08-22 15:17:34">2025-08-22</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="twikoo_visitors"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>在使用 Hexo 搭建单机游戏相册页面时，遇到了一个有趣的问题：浏览 “黑神话悟空” 分类下的图片时，向下滚动页面，上方的图片会突然消失；向上滚动时，消失的图片又会重新出现。经过一番排查，终于找到原因并解决，特此记录整个过程。</p>
+<h2 id="一、问题现象：滚动时图片-“时隐时现”"><a href="#一、问题现象：滚动时图片-“时隐时现”" class="headerlink" title="一、问题现象：滚动时图片 “时隐时现”"></a>一、问题现象：滚动时图片 “时隐时现”</h2><h3 id="具体表现"><a href="#具体表现" class="headerlink" title="具体表现"></a>具体表现</h3><ul>
+<li>页面结构：使用 Hexo 的<code>&#123;% gallery %&#125;</code>标签展示图片，按游戏分类（奥日与萤火意志、黑神话悟空、战神）分组。如下图：<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://a1.boltp.com/2025/08/22/68a818eb2fe02.png" alt="游戏分类"></li>
+<li>异常场景：在 “黑神话悟空” 分类下，我把图片往下翻了个4、5张时，上方的图片会突然消失；向上滚动回到顶部时，消失的图片又会重新加载出现。</li>
+<li>其他分类：“奥日与萤火意志”（15 张）和 “战神”（10 张）中，“战神” 分类因图片数量刚好为 10 张，未出现异常；“奥日与萤火意志” 偶尔也会出现，但因滚动速度较慢，现象不明显。</li>
+</ul>
+<h2 id="二、问题分析：可能的原因排查"><a href="#二、问题分析：可能的原因排查" class="headerlink" title="二、问题分析：可能的原因排查"></a>二、问题分析：可能的原因排查</h2><p>针对 “滚动时图片消失” 的现象，初步推测与<strong>图片加载机制</strong>或<strong>组件逻辑</strong>有关，逐一排查如下：</p>
+<h3 id="1-图片懒加载（Lazy-Loading）的影响"><a href="#1-图片懒加载（Lazy-Loading）的影响" class="headerlink" title="1. 图片懒加载（Lazy Loading）的影响"></a>1. 图片懒加载（Lazy Loading）的影响</h3><p>现代博客通常会启用图片懒加载（仅加载可视区域的图片），但正常的懒加载只会 “延迟加载”，不会 “卸载已加载的图片”。</p>
+<ul>
+<li>排查：通过浏览器开发者工具（F12）查看图片元素，发现图片使用<code>data-lazy-src</code>属性实现懒加载，但未找到 “卸载不可见图片” 的配置。</li>
+<li>结论：懒加载是优化手段，并非直接原因。</li>
+</ul>
+<h3 id="2-CSS-样式导致的-“视觉隐藏”"><a href="#2-CSS-样式导致的-“视觉隐藏”" class="headerlink" title="2. CSS 样式导致的 “视觉隐藏”"></a>2. CSS 样式导致的 “视觉隐藏”</h3><p>若父容器或图片本身的 CSS 样式存在特殊设置，可能导致滚动时图片被截断或隐藏：</p>
+<ul>
+<li>排查：检查相册容器的样式，发现<code>gallery-container</code>使用默认布局，无<code>overflow: hidden</code>或<code>position: fixed</code>等异常属性；图片元素也无<code>display: none</code>或<code>opacity: 0</code>的动态样式。</li>
+<li>结论：CSS 样式无异常。</li>
+</ul>
+<h3 id="3-相册组件的-“按需加载”-逻辑"><a href="#3-相册组件的-“按需加载”-逻辑" class="headerlink" title="3. 相册组件的 “按需加载” 逻辑"></a>3. 相册组件的 “按需加载” 逻辑</h3><p>核心怀疑点：相册组件可能存在 “加载数量限制”，超过限制后自动卸载上方图片（为了优化性能）。</p>
+<ul>
+<li><p>排查：查看 Hexo 生成的 HTML 代码，发现相册容器<code>gallery-container</code>有两个关键属性：<br>html</p>
+<p>预览</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;gallery-container&quot;</span> </span></span><br><span class="line"><span class="tag">     <span class="attr">data-type</span>=<span class="string">&quot;data&quot;</span> </span></span><br><span class="line"><span class="tag">     <span class="attr">data-limit</span>=<span class="string">&quot;10&quot;</span>  &lt;!<span class="attr">--</span> <span class="attr">限制最多加载10张图片</span> <span class="attr">--</span>&gt;</span></span><br><span class="line">     data-first=&quot;10&quot;&gt; <span class="comment">&lt;!-- 初始加载10张图片 --&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>对应现象：“黑神话悟空” 有 14 张图片，超过<code>data-limit=&quot;10&quot;</code>，因此滚动时会卸载超出范围的图片；“战神” 刚好 10 张，未触发卸载逻辑。</li>
+<li>结论：这是导致图片消失的<strong>核心原因</strong>。</li>
+</ul>
+<h2 id="三、解决过程：从参数调整到根源修复"><a href="#三、解决过程：从参数调整到根源修复" class="headerlink" title="三、解决过程：从参数调整到根源修复"></a>三、解决过程：从参数调整到根源修复</h2><h3 id="1-尝试修改组件参数"><a href="#1-尝试修改组件参数" class="headerlink" title="1. 尝试修改组件参数"></a>1. 尝试修改组件参数</h3><p>相册组件的<code>data-limit</code>和<code>data-first</code>属性控制加载数量，因此尝试在 Markdown 中修改这两个参数：</p>
+<p>markdown</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 原标签：默认参数 --&gt;</span><br><span class="line">&#123;% gallery %&#125;</span><br><span class="line">&lt;!-- 图片列表 --&gt;</span><br><span class="line">&#123;% endgallery %&#125;</span><br><span class="line"></span><br><span class="line">&lt;!-- 修改后：增加加载限制 --&gt;</span><br><span class="line">&#123;% gallery data-limit=20 data-first=14 %&#125;  &lt;!-- 黑神话悟空有14张图 --&gt;</span><br><span class="line">&lt;!-- 图片列表 --&gt;</span><br><span class="line">&#123;% endgallery %&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-发现参数未生效的新问题"><a href="#2-发现参数未生效的新问题" class="headerlink" title="2. 发现参数未生效的新问题"></a>2. 发现参数未生效的新问题</h3><p>重新生成页面后，发现 HTML 中参数未生效，反而被错误地解析到<code>data-button</code>属性中：</p>
+<p>html</p>
+<p>预览</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 错误的生成结果 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;gallery-container&quot;</span> </span></span><br><span class="line"><span class="tag">     <span class="attr">data-type</span>=<span class="string">&quot;data&quot;</span> </span></span><br><span class="line"><span class="tag">     <span class="attr">data-button</span>=<span class="string">&quot;data-limit=20 data-first=14&quot;</span>  &lt;!<span class="attr">--</span> <span class="attr">参数被错误赋值</span> <span class="attr">--</span>&gt;</span></span><br><span class="line">     data-limit=&quot;10&quot;  <span class="comment">&lt;!-- 仍为默认值10 --&gt;</span></span><br><span class="line">     data-first=&quot;10&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>原因：Hexo 相册插件（<code>hexo-butterfly-tag-plugins-plus</code>）对参数格式有严格要求，直接在<code>&#123;% gallery %&#125;</code>后添加参数即可，无需额外包裹。</p>
+<h3 id="3-正确的参数设置方式"><a href="#3-正确的参数设置方式" class="headerlink" title="3. 正确的参数设置方式"></a>3. 正确的参数设置方式</h3><p>按插件要求修改 Markdown 标签，直接声明<code>data-limit</code>和<code>data-first</code>：</p>
+<p>markdown</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">## 黑神话悟空</span></span><br><span class="line">&#123;% gallery data-limit=20 data-first=14 %&#125;  &lt;!-- 直接传递参数，值大于实际图片数 --&gt;</span><br><span class="line">![<span class="string">黑神话悟空1</span>](<span class="link">https://a1.boltp.com/2025/08/22/68a80e202d1b2.jpg</span>)</span><br><span class="line">![<span class="string">黑神话悟空2</span>](<span class="link">https://a1.boltp.com/2025/08/22/68a80e2040a50.jpeg</span>)</span><br><span class="line">&lt;!-- 其余12张图片 --&gt;</span><br><span class="line">&#123;% endgallery %&#125;</span><br></pre></td></tr></table></figure>
+<p>生成的正确 HTML：</p>
+<p>html</p>
+<p>预览</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;gallery-container&quot;</span> </span></span><br><span class="line"><span class="tag">     <span class="attr">data-type</span>=<span class="string">&quot;data&quot;</span> </span></span><br><span class="line"><span class="tag">     <span class="attr">data-limit</span>=<span class="string">&quot;20&quot;</span>  &lt;!<span class="attr">--</span> <span class="attr">生效</span>：<span class="attr">限制提升到20张</span> <span class="attr">--</span>&gt;</span></span><br><span class="line">     data-first=&quot;14&quot;&gt; <span class="comment">&lt;!-- 生效：初始加载全部14张 --&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="4-验证结果"><a href="#4-验证结果" class="headerlink" title="4. 验证结果"></a>4. 验证结果</h3><ul>
+<li>滚动测试：修改后，“黑神话悟空” 分类的 14 张图片可完整显示，滚动时不再出现图片消失的现象。</li>
+<li>其他分类：同步调整 “奥日与萤火意志”（<code>data-limit=20 data-first=15</code>），确认无异常。</li>
+</ul>
+<h2 id="四、总结与注意事项"><a href="#四、总结与注意事项" class="headerlink" title="四、总结与注意事项"></a>四、总结与注意事项</h2><ol>
+<li><strong>参数设置原则</strong>：<br>对于<code>data-limit</code>和<code>data-first</code>，建议设置为 “大于实际图片数量的值”，避免组件因 “超出限制” 触发卸载逻辑。</li>
+<li><strong>排查问题的思路</strong>：<br>遇到页面元素异常时，优先通过浏览器开发者工具查看生成的 HTML 代码，对比 “正常” 与 “异常” 场景的差异（如本文中<code>data-limit</code>的默认值 10 与图片数量的关系）。</li>
+<li><strong>插件文档的重要性</strong>：<br>本次问题的核心是对<code>&#123;% gallery %&#125;</code>标签参数不熟悉，后续使用新插件时，应先查阅官方文档（如<code>hexo-butterfly-tag-plugins-plus</code>的参数说明）。</li>
+<li><strong>图片链接稳定性</strong>：<br>若使用第三方图床（如本次的<code>a1.boltp.com</code>），需确保链接长期有效，避免因链接失效导致 “图片加载失败” 的次生问题。</li>
+</ol>
+<p>通过这次排查，不仅解决了图片消失的问题，也加深了对 Hexo 组件渲染逻辑的理解。希望这份记录能帮助遇到类似问题的朋友少走弯路～</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://www.xwybq.top">xw</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://www.xwybq.top/posts/48bcc160/">https://www.xwybq.top/posts/48bcc160/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://www.xwybq.top" target="_blank">xw的妙妙屋</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Hexo-bug/">Hexo bug</a></div><div class="post-share"><div class="social-share" data-image="https://tc.z.wiki/autoupload/f/ucStas0fz6Urti1KaUxkGn8gdyy46VE3EBgpLh8QvIiyl5f0KlZfm6UsKj-HyTuv/20250820/7bRr/1440X960/image.png/webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width no-desc" href="/posts/36df065d/" title="相册滚动时图片消失的问题：从现象到根源的排查记录"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://tc.z.wiki/autoupload/f/ucStas0fz6Urti1KaUxkGn8gdyy46VE3EBgpLh8QvIiyl5f0KlZfm6UsKj-HyTuv/20250820/7bRr/1440X960/image.png/webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">相册滚动时图片消失的问题：从现象到根源的排查记录</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/headshot.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">xw</div><div class="author-info-description">白天写BUG，夜里写诗，偶尔人间失焦，却一直在发光。</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xwybq"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/xwybq" target="_blank" title="Github"><i class="fab fa-github" style="color: #hdhfbb;"></i></a><a class="social-icon" href="mailto:w3290819205@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #000000;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content"><p>⚙️ 框架核心：Hexo</p>
+<p>🕹️ 界面设计：Butterfly</p>
+<p>🔮 域名托管：雨云</p>
+<p>🎰 部署平台：GitHub Pages + Vercel</p>
+<img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blog.liushen.fun/config/img/notice.gif" alt="gif" style="width:100%;border-radius:8px;margin-top:8px;">
+</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E9%97%AE%E9%A2%98%E7%8E%B0%E8%B1%A1%EF%BC%9A%E6%BB%9A%E5%8A%A8%E6%97%B6%E5%9B%BE%E7%89%87-%E2%80%9C%E6%97%B6%E9%9A%90%E6%97%B6%E7%8E%B0%E2%80%9D"><span class="toc-number">1.</span> <span class="toc-text">一、问题现象：滚动时图片 “时隐时现”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E8%A1%A8%E7%8E%B0"><span class="toc-number">1.1.</span> <span class="toc-text">具体表现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90%EF%BC%9A%E5%8F%AF%E8%83%BD%E7%9A%84%E5%8E%9F%E5%9B%A0%E6%8E%92%E6%9F%A5"><span class="toc-number">2.</span> <span class="toc-text">二、问题分析：可能的原因排查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%9B%BE%E7%89%87%E6%87%92%E5%8A%A0%E8%BD%BD%EF%BC%88Lazy-Loading%EF%BC%89%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="toc-number">2.1.</span> <span class="toc-text">1. 图片懒加载（Lazy Loading）的影响</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-CSS-%E6%A0%B7%E5%BC%8F%E5%AF%BC%E8%87%B4%E7%9A%84-%E2%80%9C%E8%A7%86%E8%A7%89%E9%9A%90%E8%97%8F%E2%80%9D"><span class="toc-number">2.2.</span> <span class="toc-text">2. CSS 样式导致的 “视觉隐藏”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%9B%B8%E5%86%8C%E7%BB%84%E4%BB%B6%E7%9A%84-%E2%80%9C%E6%8C%89%E9%9C%80%E5%8A%A0%E8%BD%BD%E2%80%9D-%E9%80%BB%E8%BE%91"><span class="toc-number">2.3.</span> <span class="toc-text">3. 相册组件的 “按需加载” 逻辑</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E8%A7%A3%E5%86%B3%E8%BF%87%E7%A8%8B%EF%BC%9A%E4%BB%8E%E5%8F%82%E6%95%B0%E8%B0%83%E6%95%B4%E5%88%B0%E6%A0%B9%E6%BA%90%E4%BF%AE%E5%A4%8D"><span class="toc-number">3.</span> <span class="toc-text">三、解决过程：从参数调整到根源修复</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%B0%9D%E8%AF%95%E4%BF%AE%E6%94%B9%E7%BB%84%E4%BB%B6%E5%8F%82%E6%95%B0"><span class="toc-number">3.1.</span> <span class="toc-text">1. 尝试修改组件参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%8F%91%E7%8E%B0%E5%8F%82%E6%95%B0%E6%9C%AA%E7%94%9F%E6%95%88%E7%9A%84%E6%96%B0%E9%97%AE%E9%A2%98"><span class="toc-number">3.2.</span> <span class="toc-text">2. 发现参数未生效的新问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%AD%A3%E7%A1%AE%E7%9A%84%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE%E6%96%B9%E5%BC%8F"><span class="toc-number">3.3.</span> <span class="toc-text">3. 正确的参数设置方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E9%AA%8C%E8%AF%81%E7%BB%93%E6%9E%9C"><span class="toc-number">3.4.</span> <span class="toc-text">4. 验证结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%80%BB%E7%BB%93%E4%B8%8E%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">4.</span> <span class="toc-text">四、总结与注意事项</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/48bcc160/" title="解决Hexo相册滚动时图片消失的问题：从现象到根源的排查记录"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://tc.z.wiki/autoupload/f/ucStas0fz6Urti1KaUxkGn8gdyy46VE3EBgpLh8QvIiyl5f0KlZfm6UsKj-HyTuv/20250820/7bRr/1440X960/image.png/webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="解决Hexo相册滚动时图片消失的问题：从现象到根源的排查记录"/></a><div class="content"><a class="title" href="/posts/48bcc160/" title="解决Hexo相册滚动时图片消失的问题：从现象到根源的排查记录">解决Hexo相册滚动时图片消失的问题：从现象到根源的排查记录</a><time datetime="2025-08-22T07:06:05.000Z" title="发表于 2025-08-22 15:06:05">2025-08-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/36df065d/" title="相册滚动时图片消失的问题：从现象到根源的排查记录"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://tc.z.wiki/autoupload/f/ucStas0fz6Urti1KaUxkGn8gdyy46VE3EBgpLh8QvIiyl5f0KlZfm6UsKj-HyTuv/20250820/7bRr/1440X960/image.png/webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="相册滚动时图片消失的问题：从现象到根源的排查记录"/></a><div class="content"><a class="title" href="/posts/36df065d/" title="相册滚动时图片消失的问题：从现象到根源的排查记录">相册滚动时图片消失的问题：从现象到根源的排查记录</a><time datetime="2025-08-22T07:04:52.000Z" title="发表于 2025-08-22 15:04:52">2025-08-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/a3c9f8a9/" title="谷歌账号注册教程"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://tc-new.z.wiki/autoupload/f/ucStas0fz6Urti1KaUxkGn8gdyy46VE3EBgpLh8QvIiyl5f0KlZfm6UsKj-HyTuv/20250820/woVo/1024X1024/google-color.webp/webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="谷歌账号注册教程"/></a><div class="content"><a class="title" href="/posts/a3c9f8a9/" title="谷歌账号注册教程">谷歌账号注册教程</a><time datetime="2025-08-19T16:00:00.000Z" title="发表于 2025-08-20 00:00:00">2025-08-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/99f768c5/" title="2022年上海市大学生程序设计竞赛"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://tc-new.z.wiki/autoupload/f/ucStas0fz6Urti1KaUxkGn8gdyy46VE3EBgpLh8QvIiyl5f0KlZfm6UsKj-HyTuv/20250820/BqTi/500X492/image.png/webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2022年上海市大学生程序设计竞赛"/></a><div class="content"><a class="title" href="/posts/99f768c5/" title="2022年上海市大学生程序设计竞赛">2022年上海市大学生程序设计竞赛</a><time datetime="2025-08-18T15:18:27.000Z" title="发表于 2025-08-18 23:18:27">2025-08-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/a82b503b/" title="2023牛客寒假算法基础集训营3"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://tc-new.z.wiki/autoupload/f/ucStas0fz6Urti1KaUxkGn8gdyy46VE3EBgpLh8QvIiyl5f0KlZfm6UsKj-HyTuv/20250820/BqTi/500X492/image.png/webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2023牛客寒假算法基础集训营3"/></a><div class="content"><a class="title" href="/posts/a82b503b/" title="2023牛客寒假算法基础集训营3">2023牛客寒假算法基础集训营3</a><time datetime="2025-08-18T15:18:27.000Z" title="发表于 2025-08-18 23:18:27">2025-08-18</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By xw</span></div><div class="footer_custom_text"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://haiyong.site/img/icp.png"><a href="https://beian.miit.gov.cn/#/Integrated/index" style="color:black" target="_blank">豫ICP备147号-1</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"COMMENT_PLACEHOLDER":"来留下你的精彩评论吧！输入 QQ 号还能自动显示邮箱和头像哦～"}
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.xwybq.top',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://twikoo.xwybq.top',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script src="/js/weather.js"></script><script src="/styles/fish.js"></script><script type="text/javascript" src="/js/daliyuer.js"></script><div class="aplayer no-destroy" data-id="732801999" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="list" data-preload="none" data-autoplay="false" muted></div><script src="/js/beauty.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      false
+        ? (usePjax ? pjax.loadUrl('/404.html') : window.location.href = '/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="请输入内容" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/font_2032782_8d5kxvn09md.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":130,"height":270,"hOffset":40,"vOffset":-40},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body></html>
