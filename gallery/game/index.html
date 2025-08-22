@@ -1,0 +1,221 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>game | xw的妙妙屋</title><meta name="author" content="xw"><meta name="copyright" content="xw"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="奥日与萤火意志      [{&quot;url&quot;:&quot;https:&#x2F;&#x2F;ooo.0x0.ooo&#x2F;2025&#x2F;08&#x2F;22&#x2F;OfcSwS.jpg&quot;,&quot;alt&quot;:&quot;奥日1&quot;,&quot;title&quot;:&quot;&quot;},{&quot;url&quot;:&quot;https:&#x2F;&#x2F;ooo.0x0.ooo&#x2F;2025&#x2F;08&#x2F;22&#x2F;OfcQ0a.jpg&quot;,&quot;alt&quot;:&quot;奥日2&quot;,&quot;title&quot;:&quot;&quot;},{&quot;url&quot;:&quot;https:&#x2F;&#x2F;ooo.0x0.ooo&#x2F;2025&#x2F;08&#x2F;">
+<meta property="og:type" content="website">
+<meta property="og:title" content="game">
+<meta property="og:url" content="https://www.xwybq.top/gallery/game/index.html">
+<meta property="og:site_name" content="xw的妙妙屋">
+<meta property="og:description" content="奥日与萤火意志      [{&quot;url&quot;:&quot;https:&#x2F;&#x2F;ooo.0x0.ooo&#x2F;2025&#x2F;08&#x2F;22&#x2F;OfcSwS.jpg&quot;,&quot;alt&quot;:&quot;奥日1&quot;,&quot;title&quot;:&quot;&quot;},{&quot;url&quot;:&quot;https:&#x2F;&#x2F;ooo.0x0.ooo&#x2F;2025&#x2F;08&#x2F;22&#x2F;OfcQ0a.jpg&quot;,&quot;alt&quot;:&quot;奥日2&quot;,&quot;title&quot;:&quot;&quot;},{&quot;url&quot;:&quot;https:&#x2F;&#x2F;ooo.0x0.ooo&#x2F;2025&#x2F;08&#x2F;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.xwybq.top/image/headshot.jpg">
+<meta property="article:published_time" content="2025-08-22T04:09:56.000Z">
+<meta property="article:modified_time" content="2025-08-22T05:51:09.075Z">
+<meta property="article:author" content="xw">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.xwybq.top/image/headshot.jpg"><script type="application/ld+json"></script><link rel="shortcut icon" href="/image/%E4%B8%89%E8%8A%B1%E7%8C%AB.png"><link rel="canonical" href="https://www.xwybq.top/gallery/game/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'game',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'page'
+}</script><link rel="stylesheet" href="/styles/main.css"><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><link rel="stylesheet" href="/css/daliyuer.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/twikoo_beauty.css"><link rel="stylesheet" href="/css/beauty.css"><link rel="stylesheet" href="/css/custom.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="xw的妙妙屋" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/headshot.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">9</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/bangumis/"><i class="fa-fw fa-brands fa-youtube"></i><span> 番剧</span></a></div><div class="menus_item"><a class="site-page" href="/steamgames/"><i class="fa-fw fa-brands fa-steam"></i><span> 游戏库</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fas fa-solid fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="not-home-page" id="page-header" style="background-image: url(/image/%E5%A4%A7%E7%88%B1%E4%BB%99%E5%B0%8A1.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/test.gif" alt="Logo"><span class="site-name">xw的妙妙屋</span></a></span><div id="weather"><div id="tp-weather-widget"></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/bangumis/"><i class="fa-fw fa-brands fa-youtube"></i><span> 番剧</span></a></div><div class="menus_item"><a class="site-page" href="/steamgames/"><i class="fa-fw fa-brands fa-steam"></i><span> 游戏库</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fas fa-solid fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div></div><div id="nav-right"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><!-- span= ' ' + _p('search.title')--></span></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="page-site-info"><h1 id="site-title">game</h1></div></header><main class="layout hide-aside" id="content-inner"><div id="page"><div class="container" id="article-container"><h2 id="奥日与萤火意志">奥日与萤火意志</h2>
+<div class="gallery-container" data-type="data" data-button="" data-limit="10" data-first="10">
+    <div class="gallery-items">[{"url":"https://ooo.0x0.ooo/2025/08/22/OfcSwS.jpg","alt":"奥日1","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/OfcQ0a.jpg","alt":"奥日2","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/OfcGKK.jpg","alt":"奥日3","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/OfcE5s.jpg","alt":"奥日4","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/OfcHfB.jpg","alt":"奥日5","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/Ofcc1N.jpg","alt":"奥日6","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/OfcdDC.jpg","alt":"奥日7","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/Ofcs8L.jpg","alt":"奥日8","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/OfcYxi.jpg","alt":"奥日9","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/OfcfpX.jpg","alt":"奥日10","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/Ofclft.jpg","alt":"奥日11","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/OfcjBx.jpg","alt":"奥日12","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/Ofc2Kj.jpg","alt":"奥日13","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/Ofc60p.jpg","alt":"奥日14","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/OfcXMU.jpg","alt":"奥日15","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/Ofcu1Y.jpg","alt":"奥日16","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/Ofc3Xq.jpg","alt":"奥日17","title":""},{"url":"https://ooo.0x0.ooo/2025/08/22/OfcIHv.webp","alt":"奥日18","title":""}]</div>
+  </div>
+<h2 id="黑神话悟空">黑神话悟空</h2>
+<div class="gallery-container" data-type="data" data-button="" data-limit="10" data-first="10">
+    <div class="gallery-items">[{"url":"https://a1.boltp.com/2025/08/22/68a7fab085174.jpeg","alt":"68a7fab085174","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab0d0822.jpeg","alt":"68a7fab0d0822","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab0e5e8d.jpeg","alt":"68a7fab0e5e8d","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab14f735.jpeg","alt":"68a7fab14f735","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab154982.jpeg","alt":"68a7fab154982","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab178b2d.jpeg","alt":"68a7fab178b2d","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab17e613.jpeg","alt":"68a7fab17e613","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab35e40d.jpeg","alt":"68a7fab35e40d","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab452a80.png","alt":"68a7fab452a80","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab485a96.jpg","alt":"68a7fab485a96","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab496a58.jpg","alt":"68a7fab496a58","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab4bd028.jpg","alt":"68a7fab4bd028","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab63d3dd.jpg","alt":"68a7fab63d3dd","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab769f6a.jpg","alt":"68a7fab769f6a","title":""},{"url":"https://a1.boltp.com/2025/08/22/68a7fab78f272.jpg","alt":"68a7fab78f272","title":""}]</div>
+  </div>
+</div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By xw</span></div><div class="footer_custom_text"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://haiyong.site/img/icp.png"><a href="https://beian.miit.gov.cn/#/Integrated/index" style="color:black" target="_blank">豫ICP备147号-1</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"></div><script src="/js/weather.js"></script><script src="/styles/fish.js"></script><script type="text/javascript" src="/js/daliyuer.js"></script><div class="aplayer no-destroy" data-id="732801999" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="list" data-preload="none" data-autoplay="false" muted></div><script src="/js/beauty.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      false
+        ? (usePjax ? pjax.loadUrl('/404.html') : window.location.href = '/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="请输入内容" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/font_2032782_8d5kxvn09md.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":130,"height":270,"hOffset":40,"vOffset":-40},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body></html>
