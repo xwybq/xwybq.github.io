@@ -3,7 +3,7 @@ const path = require('path');
 
 // 配置：指定图片文件夹路径和需要处理的图片扩展名
 const config = {
-  folderPath: './战神', // 图片文件夹路径，可修改为实际路径
+  folderPath: './饿殍：明末千里行', // 图片文件夹路径，可修改为实际路径
   imageExtensions: ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'] // 支持的图片格式
 };
 
