@@ -1,81 +1,3 @@
-/* CSS */
-@import url(https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css);
-#article-container pre, #article-container code {
-    font-family:Fira Code!important;
-}
-
-
-:root {
-    --hl-color: #24292e;
-    --hl-bg: rgb(246 248 250);
-    --hltools-bg: #49b1f587;
-    --hltools-color: #ffffff;
-    --hlnumber-bg: rgb(235 239 241);
-    --hlnumber-color: #221a0f52;
-}
-.hljs {
-    background: white;
-    color: black;
-}
-
-.hljs-comment,
-.hljs-quote,
-.hljs-variable {
-    color: #008000;
-}
-
-.hljs-keyword,
-.hljs-selector-tag,
-.hljs-built_in,
-.hljs-name,
-.hljs-tag {
-    color: #00f;
-}
-
-.hljs-string,
-.hljs-title,
-.hljs-section,
-.hljs-attribute,
-.hljs-literal,
-.hljs-template-tag,
-.hljs-template-variable,
-.hljs-type,
-.hljs-addition {
-    color: #a31515;
-}
-
-.hljs-deletion,
-.hljs-selector-attr,
-.hljs-selector-pseudo,
-.hljs-meta {
-    color: #2b91af;
-}
-
-.hljs-doctag {
-    color: #808080;
-}
-
-.hljs-attr {
-    color: #f00;
-}
-
-.hljs-symbol,
-.hljs-bullet,
-.hljs-link {
-    color: #00b0e8;
-}
-
-
-.hljs-emphasis {
-    font-style: italic;
-}
-
-.hljs-strong {
-    font-weight: bold;
-}
-
-/* CSS */
-
 h1#site-title {
     font-size: 8vh!important;
     text-shadow:5px 2px 6px #000!important;
@@ -91,12 +13,131 @@ a#site-name {
     font-family:Fira Code!important
 }
 
-#article-container pre, #article-container code {
-    font-family:Fira Code!important;
-}
 .article-title {
     font-weight: bolder;
     font-family:Fira Code!important;
 }
 
 
+
+:root {
+    --hl-color: #d3d7dd;      /* 代码框字体颜色 - 浅灰色 */
+    --hl-bg: #2b2b2b;         /* 代码框背景色 - IntelliJ深色背景 */
+    --hltools-bg: #3c3f41;    /* 代码框顶部工具栏背景色 */
+    --hltools-color: #a9b7c6; /* 代码框顶部工具栏字体颜色 */
+    --hlnumber-bg: #2b2b2b;   /* 代码框行数背景色 */
+    --hlnumber-color: #808080;/* 代码框行数字体颜色 */
+    --hlscrollbar-bg: #616161;/* 代码框滚动条颜色 */
+    --hlexpand-bg: #4b4b4b;   /* 代码框底部展开背景色 */
+}
+
+/* Intellij Idea-like Dark styling with green comments */
+/* 基础样式：设置代码高亮的默认文本颜色和背景色 */
+.hljs {
+    color: #d3d7dd; /* 文本默认颜色：浅蓝灰色 */
+    background: #2b2b2b; /* 背景色：深灰色，模拟IDEA深色主题 */
+}
+
+/* 替代文本和标题样式 */
+.hljs-subst, /* 用于代码中的替代文本（如模板替换内容） */
+.hljs-title { /* 用于标题类元素 */
+    font-weight: normal; /* 正常字重，不加粗 */
+    color: #56a8f5; /* 保持与默认文本相同的颜色 */
+}
+
+/* 注释和引用样式 - 改为绿色以符合需求 */
+.hljs-comment, /* 代码中的注释内容 */
+.hljs-quote { /* 引用内容（如blockquote） */
+    color: #21b532; /* 清晰的绿色，提高注释可读性 */
+    font-style: normal; /* 取消默认斜体，使用正体显示 */
+}
+
+/* 元数据样式 */
+.hljs-meta { /* 元数据（如HTML的<meta>标签内容、配置文件元信息） */
+    color: #bbb529; /* 浅黄色，区分于普通文本 */
+}
+
+/* 标签样式 */
+.hljs-tag { /* 标记语言中的标签（如HTML标签、XML标签） */
+    background: #383838; /* 标签背景色：比整体背景稍浅的灰色 */
+}
+
+/* 重要语法元素样式（关键字、选择器等） */
+.hljs-section, /* 章节标题（如Markdown的#标题） */
+.hljs-name, /* 名称（如函数名、变量名） */
+.hljs-literal, /* 字面量（如true、false、null） */
+.hljs-keyword, /* 关键字（如if、else、function） */
+.hljs-selector-tag, /* 选择器标签（如CSS中的div、p） */
+.hljs-type, /* 类型（如int、string） */
+.hljs-selector-id, /* ID选择器（如CSS中的#id） */
+.hljs-selector-class { /* 类选择器（如CSS中的.class） */
+    font-weight: bold; /* 加粗显示，突出重要性 */
+    color: #cc7832; /* 橙色，区分于普通文本 */
+}
+
+/* 属性、数字等样式 */
+.hljs-attribute, /* 属性名（如HTML的class、id属性） */
+.hljs-number, /* 数字（如123、3.14） */
+.hljs-regexp, /* 正则表达式 */
+.hljs-link { /* 链接（如URL） */
+    font-weight: bold; /* 加粗显示 */
+    color: #6897bb; /* 蓝色，区分于其他元素 */
+}
+
+/* 调整数字、正则和链接的字重 */
+.hljs-number, /* 数字单独设置为正常字重 */
+.hljs-regexp, /* 正则表达式单独设置为正常字重 */
+.hljs-link { /* 链接单独设置为正常字重 */
+    font-weight: normal;
+}
+
+/* 字符串样式 */
+/*.hljs-string {*/
+/*    color: #56b6c2; !* 青蓝色，清新且辨识度高 *!*/
+/*    font-weight: bold;*/
+/*}*/
+.hljs-string {
+    color: #bc3f3c; /* 深红色，醒目且不与绿色冲突 */
+    font-weight: bold;
+}
+
+/* 符号、项目符号和公式样式 */
+.hljs-symbol, /* 符号（如运算符、标点） */
+.hljs-bullet, /* 项目符号（如列表中的•） */
+.hljs-formula { /* 公式（如数学表达式） */
+    color: #a9b7c6; /* 保持默认文本颜色 */
+    background: #383838; /* 浅灰色背景，突出显示 */
+    font-style: italic; /* 斜体显示，增加区分度 */
+}
+
+/* 文档标签样式 - 保持绿色一致性 */
+.hljs-doctag { /* 文档标签（如JSDoc中的@param、@return） */
+    color: #6a9955; /* 绿色，与注释风格统一 */
+    text-decoration: underline; /* 下划线装饰，突出文档标签 */
+}
+
+/* 变量样式 */
+.hljs-variable, /* 变量（如普通变量） */
+.hljs-template-variable { /* 模板变量（如${variable}） */
+    color: #9876aa; /* 紫色，区分于其他元素 */
+}
+
+/* 代码添加部分样式 */
+.hljs-addition { /* 新增代码（如版本控制中的+号部分） */
+    background: #3d573d; /* 深绿色背景，直观表示新增内容 */
+}
+
+/* 代码删除部分样式 */
+.hljs-deletion { /* 删除代码（如版本控制中的-号部分） */
+    background: #614141; /* 深红色背景，直观表示删除内容 */
+}
+
+/* 强调文本样式 */
+.hljs-emphasis { /* 强调文本（如<em>标签内容） */
+    font-style: italic; /* 斜体显示 */
+}
+
+/* 加粗文本样式 */
+.hljs-strong { /* 加粗文本（如<strong>标签内容） */
+    font-weight: bold; /* 加粗显示 */
+}
