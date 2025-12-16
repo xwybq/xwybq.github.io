@@ -3802,7 +3802,7 @@ $n!$ 中 $p$ 的个数：$s = \left\lfloor \dfrac{n}{p} \right\rfloor + \left\lf
   <entry>
     <title>华为OD机试题</title>
     <url>/posts/566f2e7a/</url>
-    <content><![CDATA[<h2 id="华为-OD-机试总结">华为 OD 机试总结</h2>
+    <content><![CDATA[<p><strong>华为 OD 机试总结</strong></p>
 <ol>
 <li>核心数据<br>
 编程语言：Java<br>
