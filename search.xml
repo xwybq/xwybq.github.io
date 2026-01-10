@@ -5365,4 +5365,18 @@ $n!$ 中 $p$ 的个数：$s = \left\lfloor \dfrac{n}{p} \right\rfloor + \left\lf
         <tag>Vue</tag>
       </tags>
   </entry>
+  <entry>
+    <title>xw的逆天bug日记</title>
+    <url>/posts/b0c912a0/</url>
+    <content><![CDATA[<h3 id="2026-01-10-19-13-13">2026-01-10 19:13:13</h3>
+<p>做云图库项目时遇到个问题：重新上传图片后，如果图片体积过小，按逻辑本该把缩略图字段清空（设为 <code>null</code>），但前端首页展示的还是旧图片的缩略图。我调试了前端接口，发现接口返回的响应数据里缩略图确实是 <code>null</code>，没问题，但数据库里存的依然是原来的缩略图值。<br>
+反复排查后才发现根源：<code>saveOrUpdate</code> 方法会自动忽略值为 <code>null</code> 的字段，导致生成的 <code>update SQL</code> 语句里根本没有 <code>thumbnailUrl</code> 这个字段，自然没法把数据库里的值改成 <code>null</code>。后来我给 <code>thumbnailUrl</code> 字段加上 <code>@TableField (updateStrategy = FieldStrategy.ALWAYS)</code> 注解，问题就解决了。现在回头看，感觉自己这排查过程还挺 “逆天” 的😂</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>bug</tag>
+      </tags>
+  </entry>
 </search>
